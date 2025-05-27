@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
+import os
 from pathlib import Path
 
 import environ
@@ -20,7 +21,12 @@ env = environ.Env(
     DEBUG=(bool, False),
 )
 
-env.read_env(str(BASE_DIR.parent / 'env/.env'))
+env_vars_loaded = "IS_PROD" in os.environ  # IS_PROD is just arbitrary env var to see that env vars are loaded
+# if env vars not loaded automatically, then trying to load then manually
+if not env_vars_loaded:
+    env_file_path = BASE_DIR.parent / "env/.env.local"
+    env.read_env(env_file_path)
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
@@ -28,9 +34,9 @@ env.read_env(str(BASE_DIR.parent / 'env/.env'))
 SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
