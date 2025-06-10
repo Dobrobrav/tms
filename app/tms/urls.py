@@ -19,6 +19,8 @@ from django.urls import path, include
 
 import tasks.urls
 
+# TODO: add versioning
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('tasks/', include(tasks.urls))
