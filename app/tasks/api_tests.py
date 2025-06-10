@@ -5,7 +5,7 @@ from rest_framework.test import APIClient
 class TestUserAPI:
 
     @pytest.mark.django_db
-    def test__when_user_is_created_then_returns_user_id(self) -> None:
+    def test__when_user_is_created_then_api_returns_user_id(self) -> None:
         client = APIClient()
         user_data = {'name': 'test_name'}
 

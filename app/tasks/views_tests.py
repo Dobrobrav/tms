@@ -25,8 +25,8 @@ class TestGettingUser:
     def test__usecase_exceptions_cause_error_status_codes(self, exception: Exception, status_code: int) -> None:
         view = UserView.as_view(get_user_usecase=(stub_use_case := Mock(spec=GetUserUsecase)))
         stub_use_case.execute.side_effect = exception
-        request = APIRequestFactory().get('/tasks/users/{user_id}')
         test_user_id = 123
+        request = APIRequestFactory().get(f'/tasks/users/{test_user_id}')
 
         response = view(request, user_id=test_user_id)
 
