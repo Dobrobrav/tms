@@ -14,7 +14,6 @@ from tasks.views import UserView
 
 class TestGettingUser:
 
-    # TODO: add assertion for response text
     @pytest.mark.parametrize(
         'exception, status_code', [
             (Exception(), 500),
@@ -44,7 +43,6 @@ class TestGettingUser:
 
 class TestCreatingUser:
 
-    # TODO: add assertion for response text
     @pytest.mark.parametrize(
         'exception, status_code', [
             (Exception(), 500),
