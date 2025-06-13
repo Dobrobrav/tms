@@ -33,9 +33,30 @@ class TestGettingUser:
         assert response.status_code == status_code
 
     def test__user_view_returns_400_on_invalid_input_data(self) -> None:
-        view = UserView.as_view(create_user_usecase=CreateUserUsecase(user_repo=Mock()))
-        request = APIRequestFactory().post('/users/', data={'name': ''}, content_type='application/json')
+        view = UserView.as_view(create_user_usecase=GetUserUsecase(user_repo=Mock()))
+        request = APIRequestFactory().post('/tasks/users/', data={'name': ''}, content_type='application/json')
 
         response = view(request)
 
         assert response.status_code == 400
+
+
+class TestCreatingUser:
+
+    # TODO: add assertion for response text
+    @pytest.mark.parametrize(
+        'exception, status_code', [
+            (Exception(), 500),
+            (ValidationError('', []), 400),
+            (DomainValidationError(), 400),
+        ]
+    )
+    def test__usecase_exceptions_cause_error_status_codes(self, exception: Exception, status_code: int) -> None:
+        view = UserView.as_view(create_user_usecase=(stub_use_case := Mock(spec=CreateUserUsecase)))
+        stub_use_case.execute.side_effect = exception
+        request = APIRequestFactory().post(f'/tasks/users/', data={'name': 'test name'})
+
+        response = view(request)
+
+        assert response.status_code == status_code
+#

@@ -24,12 +24,8 @@ class UserView(APIView):
     def post(self, request: Request) -> Response:
         try:
             user_dto = self._extract_data(request)
-        except ValidationError as e:
-            return Response({'validation error': e.errors()}, status=status.HTTP_400_BAD_REQUEST)
-
-        try:
             user_id = self.create_user_usecase.execute(user_dto)
-        except DomainValidationError as e:
+        except (DomainValidationError, ValidationError) as e:
             return Response({'validation error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response(f'unknown error', status=status.HTTP_500_INTERNAL_SERVER_ERROR)
