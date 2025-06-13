@@ -17,8 +17,14 @@ jobs:
         run: |
           cd docker
           docker compose -f docker-compose.yaml up -d --build 
-          
+
       - name: Run tests
         run: |
           cd docker
           docker compose exec web pytest
+
+      - name: Stop Docker Compose
+        if: always()
+        run: |
+          cd docker
+          docker compose down
