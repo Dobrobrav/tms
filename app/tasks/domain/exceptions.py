@@ -1,0 +1,6 @@
+class ApplicationError(Exception):
+    ...
+
+
+class DomainValidationError(ApplicationError):
+    ...
