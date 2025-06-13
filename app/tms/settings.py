@@ -21,6 +21,7 @@ env = environ.Env(
     DEBUG=(bool, False),
 )
 
+# NOTE (SemenK): this allows to run tests locally without docker by loading envs here
 env_vars_loaded = "IS_PROD" in os.environ  # IS_PROD is just arbitrary env var to see that env vars are loaded
 # if env vars not loaded automatically, then trying to load then manually
 if not env_vars_loaded:
