@@ -1,5 +1,3 @@
-import icontract
-
 from tasks.domain.exceptions import InvalidReporterID, InvalidAssigneeID, InvalidRelatedTaskIDs
 from tasks.domain.tasks.dto import TaskDTO
 from tasks.domain.tasks.repository import TaskRepository
@@ -18,8 +16,8 @@ class CreateTaskUsecase(Usecase):
 
     def execute(self, task_dto: TaskDTO) -> int:
         self._ensure_provided_entities_exist(task_dto)
-        task = task_dto.to_task()
-        return self._task_repo.set(task)
+        task_entity = task_dto.to_task_entity()
+        return self._task_repo.set(task_entity)
 
     def _ensure_provided_entities_exist(self, task_dto: TaskDTO) -> None:
         if not self._user_repo.exists(id_or_ids=task_dto.reporter_id):
