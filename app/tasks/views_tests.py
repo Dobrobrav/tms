@@ -43,7 +43,7 @@ class TestCreatingTask:
             'related_task_ids': [14, 88, 228],
             'assignee_id': 456,
         }
-        request = APIRequestFactory().post("/tasks/", task_data)  # TODO: path seems to be missing prefix
+        request = APIRequestFactory().post("/tasks/tasks/", task_data)
 
         response = view(request)
 
