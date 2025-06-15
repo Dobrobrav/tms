@@ -13,7 +13,7 @@ def log_error[T](callable_: Callable[..., T]) -> Callable[..., T]:
             return callable_(*args, **kwargs)
         except Exception as e:
             # TODO: potentially add if-statement to avoid logging errors which are not supposed to be logged
-            logger.error(f"Unknown error occurred: {str(e)}", exc_info=True)
+            logger.error(f"Error occurred: {str(e)}", exc_info=True)
             raise e
 
     return wrapper
