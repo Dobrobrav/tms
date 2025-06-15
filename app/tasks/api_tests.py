@@ -6,10 +6,9 @@ from rest_framework.test import APIClient
 class TestUserAPI:
 
     def test__when_user_is_created_then_api_returns_user_id(self) -> None:
-        client = APIClient()
         user_data = {'name': 'test_name'}
 
-        response = client.post('/tasks/users/', user_data)
+        response = APIClient().post('/tasks/users/', user_data)
 
         assert response.status_code == 201
         assert str.isdigit(str(response.json()['id']))
