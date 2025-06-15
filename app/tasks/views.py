@@ -79,17 +79,12 @@ class TaskView(APIView):
         try:
             task_dto = self._extract_data(request)
             task_id = self.create_task_usecase.execute(task_dto)
-        except (ValidationError, DomainValidationError) as e:
+        except (
+                ValidationError, DomainValidationError,
+                InvalidReporterID, InvalidAssigneeID,
+                InvalidRelatedTaskIDs,
+        ) as e:
             return Response({'error': e}, status=status.HTTP_400_BAD_REQUEST)
-        except InvalidReporterID as e:
-            return Response({'error': e}, status=status.HTTP_400_BAD_REQUEST)
-        except InvalidAssigneeID as e:
-            return Response({'error': e}, status=status.HTTP_400_BAD_REQUEST)
-        except InvalidRelatedTaskIDs as e:
-            return Response(
-                f'some (or all) of the following related task IDs are invalid {e.invalid_bunch_of_related_task_ids}',
-                status=status.HTTP_400_BAD_REQUEST,
-            )
         except TitleEmptyError:
             return Response('title must not be empty', status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
