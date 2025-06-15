@@ -89,9 +89,9 @@ class TestTaskAPI:
         get_task_response = APIClient().get(f'/tasks/tasks/{created_task_id}')
 
         assert get_task_response.status_code == 200
-        assert get_task_response.json()['title'] == task_data['title']
-        assert get_task_response.json()['reporter_id'] == task_data['reporter_id']
-        assert get_task_response.json()['description'] == task_data['description']
-        assert get_task_response.json()['related_task_ids'] == task_data['related_task_ids']
+        assert get_task_response.json()['title'] == test_title
+        assert get_task_response.json()['reporter_id'] == test_reporter_id
+        assert get_task_response.json()['description'] == test_description
+        assert get_task_response.json()['related_task_ids'] == test_related_task_ids
         assert get_task_response.json()['assignee_id'] == task_data['assignee_id']
         assert get_task_response.json()['id'] == created_task_id
