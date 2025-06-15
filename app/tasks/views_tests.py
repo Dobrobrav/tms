@@ -1,3 +1,4 @@
+import uuid
 from unittest.mock import Mock
 
 import pytest
@@ -5,11 +6,63 @@ from pydantic import ValidationError
 from rest_framework.test import APIRequestFactory
 
 from tasks.domain.exceptions import (
+    InvalidReporterID,
+    InvalidAssigneeID,
+    InvalidRelatedTaskIDs,
+    TitleEmptyError,
     DomainValidationError,
 )
 from tasks.domain.use_cases.create_user import CreateUserUsecase
 from tasks.domain.use_cases.get_user import GetUserUsecase
-from tasks.views import UserView
+from tasks.views import TaskView, UserView
+
+
+class TestCreatingTask:
+
+    @pytest.mark.parametrize(
+        "exception, status_code",
+        [
+            (InvalidReporterID(123), 400),
+            (InvalidAssigneeID(123), 400),
+            (InvalidRelatedTaskIDs([]), 400),
+            (TitleEmptyError(123), 400),
+            (Exception, 500),
+        ],
+    )
+    def test__usecase_exceptions_cause_error_status_codes(
+            self,
+            exception: Exception,
+            status_code: int,
+    ) -> None:
+        view = TaskView.as_view(create_task_usecase=(use_case := Mock()))
+        use_case.execute.side_effect = exception
+        task_data = {
+            'title': 'test title',
+            'reporter_id': 123,
+            'description': 'test description',
+            'related_task_ids': [14, 88, 228],
+            'assignee_id': 456,
+        }
+        request = APIRequestFactory().post("/tasks/", task_data)  # TODO: path seems to be missing prefix
+
+        response = view(request)
+
+        assert response.status_code == status_code
+
+    def test__invalid_input_data_types_cause_400(self) -> None:
+        view = TaskView.as_view(create_task_usecase=(Mock()))
+        task_data = {
+            'title': 'test title',
+            'reporter_id': 'invalid reporter id',
+            'description': 'test description',
+            'related_task_ids': 'invalid related task ids',
+            'assignee_id': 'invalid assignee id',
+        }
+        request = APIRequestFactory().post("/tasks/tasks/", task_data)
+
+        response = view(request)
+
+        assert response.status_code == 400
 
 
 class TestGettingUser:
@@ -61,7 +114,7 @@ class TestCreatingUser:
 
     def test__user_view_returns_400_on_invalid_input_data(self) -> None:
         view = UserView.as_view(create_user_usecase=GetUserUsecase(user_repo=Mock()))
-        request = APIRequestFactory().post('/tasks/users/', data={'name': ''}, content_type='application/json')
+        request = APIRequestFactory().post('/tasks/users/', data={'name': ''})
 
         response = view(request)
 
