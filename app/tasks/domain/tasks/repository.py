@@ -1,7 +1,6 @@
 from typing import Sequence
 
 from tasks.domain.base_repository import Repository
-from tasks.domain.exceptions import InvalidRelatedTaskIDs
 from tasks.domain.tasks.entity import TaskEntity
 from tasks.models import TaskModel
 
