@@ -21,4 +21,6 @@ class UserRepository(Repository):
             return created_user.pk
 
     def exists(self, id_or_ids: int | Sequence[UUID]) -> bool:
-        ...
+        """ Returns true if ALL provided ids exist in repo """
+        ids = [id_or_ids] if isinstance(id_or_ids, int) else id_or_ids
+        return UserModel.objects.filter(pk__in=list(ids)).count() == len(ids)
