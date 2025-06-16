@@ -9,7 +9,6 @@ from tasks.domain.comments.entity import CommentEntity
 class CommentDTO(BaseModel):
     text: str
     user_id: int
-    task_id: int | None = None
     comment_id: int | None = None
     create_time: datetime | None = None
 

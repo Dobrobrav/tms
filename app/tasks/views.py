@@ -120,19 +120,18 @@ class CommentView(APIView):
 
     def post(self, request: Request) -> Response:
         try:
-            comment_dto = self._extract_data(request)
-            comment_id = self.create_comment_usecase.execute(comment_dto)
+            comment_dto, task_id = self._extract_data(request)
+            comment_id = self.create_comment_usecase.execute(comment_dto, task_id)
         except Exception:
             return Response({'error': 'unknown error'}, status=HTTP_500_INTERNAL_SERVER_ERROR)
         else:
             return Response({'id': comment_id}, status=HTTP_201_CREATED)
 
     @log_error
-    def _extract_data(self, request: Request):
-        return CommentDTO(
-            text=request.data['text'],
-            user_id=request.data['user_id'],
-            task_id=request.data['task_id'],
+    def _extract_data(self, request: Request) -> tuple[CommentDTO, int]:
+        return (
+            CommentDTO(text=request.data['text'], user_id=request.data['user_id']),
+            request.data['task_id'],
         )
 
     def get(self, request: Request, comment_id: int) -> Response:
@@ -142,6 +141,9 @@ class CommentView(APIView):
             return Response({'error': 'unknown error'}, status=HTTP_500_INTERNAL_SERVER_ERROR)
         else:
             return Response(
-                data={'user_id': comment_dto.user_id, 'text': comment_dto.text, 'create_time': comment_dto.create_time_str},
+                data={
+                    'user_id': comment_dto.user_id, 'text': comment_dto.text,
+                    'create_time': comment_dto.create_time_str,
+                },
                 status=HTTP_200_OK,
             )

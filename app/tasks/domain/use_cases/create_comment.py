@@ -9,8 +9,8 @@ class CreateCommentUsecase(Usecase):
     def __init__(self, task_repo: TaskRepository) -> None:
         self._task_repo = task_repo
 
-    def execute(self, comment_dto: CommentDTO) -> int:
-        task_entity = self._task_repo.get(comment_dto.task_id)
+    def execute(self, comment_dto: CommentDTO, task_id: int) -> int:
+        task_entity = self._task_repo.get(task_id)
         comment_entity = task_entity.create_comment(comment_dto, create_time=datetime.datetime.now())
         comment_id = self._task_repo.set_comment(task_entity, comment_entity)
         return comment_id
