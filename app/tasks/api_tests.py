@@ -168,4 +168,5 @@ class TestCommentAPI:
 
     def _assert_create_time_roughly_equals_now(self, create_time_str: str):
         datetime_from_response = datetime.fromisoformat(create_time_str).replace(tzinfo=None)
-        assert datetime.now() - datetime_from_response < timedelta(minutes=1)
+        allowed_delta = timedelta(minutes=1)
+        assert datetime.now() - datetime_from_response < allowed_delta
