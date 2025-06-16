@@ -9,7 +9,7 @@ class GetTaskUsecase(Usecase):
 
     def execute(self, task_id: int) -> TaskDTO:
         task = self._task_repo.get(task_id)
-        return TaskDTO.from_entity_task(task)
+        return TaskDTO.from_entity(task)
 
 
 def get_task_usecase_factory() -> GetTaskUsecase:

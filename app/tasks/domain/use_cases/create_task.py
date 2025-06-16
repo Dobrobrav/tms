@@ -16,7 +16,7 @@ class CreateTaskUsecase(Usecase):
 
     def execute(self, task_dto: TaskDTO) -> int:
         self._ensure_provided_entities_exist(task_dto)
-        task_entity = task_dto.to_task_entity()
+        task_entity = task_dto.to_entity()
         return self._task_repo.set(task_entity)
 
     def _ensure_provided_entities_exist(self, task_dto: TaskDTO) -> None:

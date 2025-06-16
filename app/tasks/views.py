@@ -3,9 +3,10 @@ from pydantic import ValidationError
 from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework.status import HTTP_200_OK
+from rest_framework.status import HTTP_200_OK, HTTP_500_INTERNAL_SERVER_ERROR, HTTP_201_CREATED
 from rest_framework.views import APIView
 
+from tasks.domain.comments.dto import CommentDTO
 from tasks.domain.exceptions import (
     InvalidReporterID,
     InvalidAssigneeID,
@@ -14,8 +15,10 @@ from tasks.domain.exceptions import (
     DomainValidationError,
 )
 from tasks.domain.tasks.dto import TaskDTO
+from tasks.domain.use_cases.create_comment import CreateCommentUsecase
 from tasks.domain.use_cases.create_task import CreateTaskUsecase
 from tasks.domain.use_cases.create_user import CreateUserUsecase
+from tasks.domain.use_cases.get_comment import GetCommentUsecase
 from tasks.domain.use_cases.get_task import GetTaskUsecase
 from tasks.domain.use_cases.get_user import GetUserUsecase
 from tasks.domain.users.dto import UserDTO
@@ -61,6 +64,7 @@ class TaskView(APIView):
     get_task_usecase: GetTaskUsecase = None
 
     def get(self, request: Request, task_id: int) -> Response:
+        # TODO: add error handling (first write tests)
         task_dto = self.get_task_usecase.execute(task_id)
         return Response(
             data={
@@ -68,7 +72,14 @@ class TaskView(APIView):
                 'title': task_dto.title,
                 'reporter_id': task_dto.reporter_id,
                 'description': task_dto.description,
-                'comment_ids': task_dto.comment_ids,
+                'comments': [
+                    {
+                        'id': c.comment_id,
+                        'user_id': c.user_id,
+                        'text': c.text,
+                    }
+                    for c in task_dto.comments
+                ],
                 'related_task_ids': task_dto.related_task_ids,
                 'assignee_id': task_dto.assignee_id,
             },
@@ -87,7 +98,7 @@ class TaskView(APIView):
             return Response({'error': e}, status=status.HTTP_400_BAD_REQUEST)
         except TitleEmptyError:
             return Response('title must not be empty', status=status.HTTP_400_BAD_REQUEST)
-        except Exception as e:
+        except Exception:
             return Response(f'unknown error', status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         else:
             return Response({'id': task_id}, status=status.HTTP_201_CREATED)
@@ -101,3 +112,38 @@ class TaskView(APIView):
             related_task_ids=request.data.getlist('related_task_ids'),
             assignee_id=request.data.get('assignee_id'),
         )
+
+
+class CommentView(APIView):
+    create_comment_usecase: CreateCommentUsecase = None
+    get_comment_usecase: GetCommentUsecase = None
+
+    def post(self, request: Request) -> Response:
+        try:
+            comment_dto, task_id = self._extract_data(request)
+            comment_id = self.create_comment_usecase.execute(comment_dto, task_id)
+        except Exception:
+            return Response({'error': 'unknown error'}, status=HTTP_500_INTERNAL_SERVER_ERROR)
+        else:
+            return Response({'id': comment_id}, status=HTTP_201_CREATED)
+
+    @log_error
+    def _extract_data(self, request: Request) -> tuple[CommentDTO, int]:
+        return (
+            CommentDTO(text=request.data['text'], user_id=request.data['user_id']),
+            request.data['task_id'],
+        )
+
+    def get(self, request: Request, comment_id: int) -> Response:
+        try:
+            comment_dto = self.get_comment_usecase.execute(comment_id)
+        except Exception:
+            return Response({'error': 'unknown error'}, status=HTTP_500_INTERNAL_SERVER_ERROR)
+        else:
+            return Response(
+                data={
+                    'user_id': comment_dto.user_id, 'text': comment_dto.text,
+                    'create_time': comment_dto.create_time_str,
+                },
+                status=HTTP_200_OK,
+            )
