@@ -15,7 +15,7 @@ class CommentEntity:
             comment_id: int | None = None,
     ) -> None:
         self._commenter_id = user_id
-        self.content = content
+        self._set_content(content)
         self._create_time = create_time
         self._comment_id = comment_id
 
@@ -23,9 +23,8 @@ class CommentEntity:
     def content(self) -> str:
         return self._content
 
-    @content.setter
     @icontract.require(lambda self, value: len(value) > 0, 'content must not be empty')
-    def content(self, value: str) -> None:
+    def _set_content(self, value: str) -> None:
         self._content = value
 
     @property
