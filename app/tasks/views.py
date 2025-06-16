@@ -141,4 +141,7 @@ class CommentView(APIView):
         except Exception:
             raise NotImplementedError()
         else:
-            return Response(data={'user_id': comment_dto.user_id, 'text': comment_dto.text}, status=HTTP_200_OK)
+            return Response(
+                data={'user_id': comment_dto.user_id, 'text': comment_dto.text, 'create_time': comment_dto.create_time_str},
+                status=HTTP_200_OK,
+            )
