@@ -31,7 +31,7 @@ def _assert_tasks_equal_without_id(task1: TaskEntity, task2: TaskEntity) -> None
 
 
 def test__dto_casted_from_entity_has_correct_data() -> None:
-    tesk_entity = TaskEntity(
+    task_entity = TaskEntity(
         title=(test_title := "Sample Task"),
         reporter_id=(test_reporter_id := 123),
         description=(test_description := "This is a sample task."),
@@ -50,7 +50,7 @@ def test__dto_casted_from_entity_has_correct_data() -> None:
         task_id=(test_task_id := 123),
     )
 
-    task_dto = TaskDTO.from_entity(tesk_entity)
+    task_dto = TaskDTO.from_entity(task_entity)
 
     assert task_dto.task_id == test_task_id
     assert task_dto.comments == [

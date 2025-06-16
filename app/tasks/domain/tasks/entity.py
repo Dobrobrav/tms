@@ -6,6 +6,7 @@ import icontract
 from tasks.domain.aggregate_root import AggregateRoot
 from tasks.domain.comments.dto import CommentDTO
 from tasks.domain.comments.entity import CommentEntity
+from tasks.domain.exceptions import DomainValidationError
 
 
 class TaskEntity(AggregateRoot):
@@ -32,7 +33,10 @@ class TaskEntity(AggregateRoot):
         return self._title
 
     @title.setter
-    @icontract.require(lambda self, value: len(value) > 0, 'title must not be empty')
+    @icontract.require(
+        lambda self, value: len(value) > 0, 'title must not be empty',
+        error=DomainValidationError,
+    )
     def title(self, value: str) -> None:
         self._title = value
 
