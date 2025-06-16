@@ -2,16 +2,16 @@ from typing import Sequence
 from uuid import UUID
 
 from tasks.domain.base_repository import Repository
-from tasks.domain.users.entity import User
+from tasks.domain.users.entity import UserEntity
 from tms_types import UserModel
 
 
 class UserRepository(Repository):
-    def get(self, entity_id: int) -> User:
+    def get(self, entity_id: int) -> UserEntity:
         user = UserModel.objects.get(pk=entity_id)
-        return User(name=user.username, user_id=user.pk)
+        return UserEntity(name=user.username, user_id=user.pk)
 
-    def set(self, entity: User) -> int:
+    def set(self, entity: UserEntity) -> int:
         user_already_exists = entity.user_id
         if user_already_exists:
             # NOTE (SemenK): not tested

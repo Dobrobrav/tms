@@ -28,5 +28,5 @@ def assert_tasks_equal_without_id(task1: TaskEntity, task2: TaskEntity) -> None:
     assert task1.reporter_id == task2.reporter_id, f"Reporter mismatch: {task1.reporter_id} != {task2.reporter_id}"
     assert task1.description == task2.description, f"Description mismatch: {task1.description} != {task2.description}"
     assert task1.assignee_id == task2.assignee_id, f"Assignee mismatch: {task1.assignee_id} != {task2.assignee_id}"
-    assert task1.get_comment_ids() == task2.get_comment_ids(), f"Comment IDs mismatch: {task1.get_comment_ids()} != {task2.get_comment_ids()}"
-    assert task1.get_related_task_ids() == task2.get_related_task_ids(), f"Related Task IDs mismatch: {task1.get_related_task_ids()} != {task2.get_related_task_ids()}"
+    assert task1.comments == task2.comments, f"Comment IDs mismatch: {task1.comments} != {task2.comments}"
+    assert task1.related_task_ids == task2.related_task_ids, f"Related Task IDs mismatch: {task1.related_task_ids} != {task2.related_task_ids}"
