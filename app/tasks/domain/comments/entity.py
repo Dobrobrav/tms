@@ -2,6 +2,8 @@ import datetime
 
 import icontract
 
+from tasks.domain.exceptions import DomainValidationError
+
 
 class CommentEntity:
     """
@@ -23,7 +25,10 @@ class CommentEntity:
     def content(self) -> str:
         return self._content
 
-    @icontract.require(lambda self, value: len(value) > 0, 'content must not be empty')
+    @icontract.require(
+        lambda self, value: len(value) > 0, 'content must not be empty',
+        error=DomainValidationError,
+    )
     def _set_content(self, value: str) -> None:
         self._content = value
 
