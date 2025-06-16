@@ -2,6 +2,7 @@ from typing import Self
 
 from pydantic import BaseModel
 
+from tasks.domain.comments.dto import CommentDTO
 from tasks.domain.tasks.entity import TaskEntity
 
 
@@ -9,7 +10,7 @@ class TaskDTO(BaseModel):
     title: str
     reporter_id: int
     description: str = ''
-    comment_ids: list[int] = []
+    comments: list[CommentDTO] = []
     related_task_ids: list[int] = []
     assignee_id: int | None = None
     task_id: int | None = None
@@ -30,7 +31,7 @@ class TaskDTO(BaseModel):
             title=task.title,
             reporter_id=task.reporter_id,
             description=task.description,
-            comment_ids=task.comment_ids,
+            comments=[CommentDTO.from_entity_comment(c) for c in task.comments],
             related_task_ids=task.related_task_ids,
             assignee_id=task.assignee_id,
             task_id=task.task_id,

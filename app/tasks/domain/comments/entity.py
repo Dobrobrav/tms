@@ -1,23 +1,20 @@
 import datetime
-from uuid import UUID
 
 import icontract
 
-from tasks.domain.aggregate_root import AggregateRoot
 
-
-class Comment(AggregateRoot):
+class CommentEntity:
     def __init__(
             self,
-            user_id: UUID,
+            user_id: int,
             content: str,
             create_time: datetime.datetime,
-            id: UUID | None = None,
+            comment_id: int | None = None,
     ) -> None:
-        self._user_id = user_id
+        self._commenter_id = user_id
         self.content = content
         self._create_time = create_time
-        self._id = id
+        self._comment_id = comment_id
 
     @property
     def content(self) -> str:
@@ -31,3 +28,11 @@ class Comment(AggregateRoot):
     @property
     def create_time(self) -> datetime.datetime:
         return self._create_time
+
+    @property
+    def commenter_id(self) -> int:
+        return self._commenter_id
+
+    @property
+    def comment_id(self) -> int:
+        return self._comment_id
