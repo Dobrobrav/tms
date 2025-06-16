@@ -10,6 +10,7 @@ class CommentDTO(BaseModel):
     user_id: int
     task_id: int | None = None
     comment_id: int | None = None
+    create_time: datetime.datetime | None = None
 
     @classmethod
     def from_entity_comment(cls, comment_entity: CommentEntity) -> Self:
@@ -17,4 +18,5 @@ class CommentDTO(BaseModel):
             text=comment_entity.content,
             user_id=comment_entity.commenter_id,
             comment_id=comment_entity.comment_id,
+            create_time=comment_entity.create_time,
         )

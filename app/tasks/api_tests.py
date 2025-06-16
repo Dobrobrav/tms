@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 import pytest
 from rest_framework.reverse import reverse
 from rest_framework.test import APIClient
@@ -105,61 +107,66 @@ class TestTaskAPI:
 class TestCommentAPI:
 
     def test__when_comment_is_created_api_returns_comment_id(self, api_client: APIClient) -> None:
-        test_user_id = api_client.post(reverse('users'), {'name': 'test comment user'}).data['id']
-        test_reporter_id = api_client.post(reverse('users'), {'name': 'test reporter'}).data['id']
-        test_task_id = api_client.post(
-            path=reverse('tasks'),
-            data={'title': 'test_title', 'reporter_id': test_reporter_id},
-        ).data['id']
+        test_user_id = self._create_user(api_client, 'test_commenter_id')
+        test_reporter_id = self._create_user(api_client, 'test_reporter_id')
+        test_task_id = self._create_task(api_client, test_reporter_id)
         test_text = 'test text'
 
-        response = api_client.post(
+        comment_response = api_client.post(
             path=reverse('comments'),
             data={'task_id': test_task_id, 'user_id': test_user_id, 'text': test_text},
         )
 
-        assert response.status_code == 201
-        assert str.isdigit(str(response.data['id']))
+        assert comment_response.status_code == 201
+        assert str.isdigit(str(comment_response.data['id']))
 
     def test__when_comment_is_created_then_it_can_be_retrieved(self, api_client: APIClient) -> None:
-        test_user_id = api_client.post(reverse('users'), {'name': 'test comment user'}).data['id']
-        test_reporter_id = api_client.post(reverse('users'), {'name': 'test reporter'}).data['id']
-        test_task_id = api_client.post(
-            path=reverse('tasks'),
-            data={'title': 'test_title', 'reporter_id': test_reporter_id},
-        ).data['id']
+        test_user_id = self._create_user(api_client, 'test_commenter_id')
+        test_reporter_id = self._create_user(api_client, 'test_reporter_id')
+        test_task_id = self._create_task(api_client, test_reporter_id)
         test_text = 'test text'
+        comment_id = self._create_comment(api_client, test_task_id, test_text, test_user_id)
 
-        comment_id = api_client.post(
-            path=reverse('comments'),
-            data={'task_id': test_task_id, 'user_id': test_user_id, 'text': test_text},
-        ).data['id']
-        response = api_client.get(reverse('comment', kwargs={'comment_id': comment_id}))
+        comment_response = api_client.get(reverse('comment', kwargs={'comment_id': comment_id}))
 
-        assert response.status_code == 200
-        assert response.data['user_id'] == test_user_id
-        assert response.data['text'] == test_text
+        assert comment_response.status_code == 200
+        assert comment_response.data['user_id'] == test_user_id
+        assert comment_response.data['text'] == test_text
+        self._assert_create_time_roughly_equals_now(comment_response.data['create_time'])
 
     def test__when_comment_is_created_then_it_can_be_seen_in_task(self, api_client: APIClient) -> None:
-        test_user_id = api_client.post(reverse('users'), {'name': 'test comment user'}).data['id']
-        test_reporter_id = api_client.post(reverse('users'), {'name': 'test reporter'}).data['id']
-        test_task_id = api_client.post(
-            path=reverse('tasks'),
-            data={'title': 'test_title', 'reporter_id': test_reporter_id},
-        ).data['id']
+        test_user_id = self._create_user(api_client, 'test_commenter_id')
+        test_reporter_id = self._create_user(api_client, 'test_reporter_id')
+        test_task_id = self._create_task(api_client, test_reporter_id)
         test_text = 'test text'
-        comment_id = api_client.post(
-            reverse('comments'),
-            data={'task_id': test_task_id, 'user_id': test_user_id, 'text': test_text},
-        ).data['id']
+        comment_id = self._create_comment(api_client, test_task_id, test_text, test_user_id)
 
-        response = api_client.get(path=reverse('task', kwargs={'task_id': test_task_id}))
+        task_response = api_client.get(path=reverse('task', kwargs={'task_id': test_task_id}))
 
-        assert response.status_code == 200
-        assert response.data['comments'] == [
+        assert task_response.status_code == 200
+        assert task_response.data['comments'] == [
             {
                 'id': comment_id,
                 'user_id': test_user_id,
                 'text': test_text,
             }
         ]
+
+    def _create_user(self, api_client: APIClient, username: str):
+        return api_client.post(reverse('users'), {'name': username}).data['id']
+
+    def _create_task(self, api_client: APIClient, test_reporter_id: int):
+        return api_client.post(
+            path=reverse('tasks'),
+            data={'title': 'test_title', 'reporter_id': test_reporter_id},
+        ).data['id']
+
+    def _create_comment(self, api_client: APIClient, test_task_id: int, test_text: str, test_user_id: int):
+        return api_client.post(
+            path=reverse('comments'),
+            data={'task_id': test_task_id, 'user_id': test_user_id, 'text': test_text},
+        ).data['id']
+
+    def _assert_create_time_roughly_equals_now(self, create_time_str: str):
+        datetime_from_response = datetime.fromisoformat(create_time_str).replace(tzinfo=None)
+        assert datetime.now() - datetime_from_response < timedelta(minutes=1)
