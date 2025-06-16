@@ -1,18 +1,29 @@
 from typing import Sequence
 
 from tasks.domain.base_repository import Repository
+from tasks.domain.comments.entity import CommentEntity
 from tasks.domain.tasks.entity import TaskEntity
-from tasks.models import TaskModel
+from tasks.models import TaskModel, CommentModel
 
 
 class TaskRepository(Repository):
     def get(self, entity_id: int) -> TaskEntity:
+        # TODO: make it prefetch all comments?
         task_orm = TaskModel.objects.get(pk=entity_id)
         return TaskEntity(
             title=task_orm.title,
             reporter_id=task_orm.reporter_id,
             description=task_orm.description,
             related_task_ids=[related_task.pk for related_task in task_orm.related_tasks.all()],
+            comments=[
+                CommentEntity(
+                    content=c.text,
+                    create_time=c.create_time,
+                    comment_id=c.pk,
+                    user_id=c.commenter_id,
+                )
+                for c in task_orm.comments.all()
+            ],
             assignee_id=task_orm.assignee_id,
             task_id=task_orm.pk,
         )
@@ -47,3 +58,12 @@ class TaskRepository(Repository):
         """ Returns true if ALL provided ids exist in repo """
         ids = [id_or_ids] if isinstance(id_or_ids, int) else id_or_ids
         return TaskModel.objects.filter(pk__in=list(ids)).count() == len(ids)
+
+    def set_comment(self, task_entity: TaskEntity, comment_entity: CommentEntity) -> int:
+        comment_orm = CommentModel.objects.create(
+            text=comment_entity.content,
+            task=TaskModel.objects.get(pk=task_entity.task_id),
+            create_time=comment_entity.create_time,
+            commenter_id=comment_entity.commenter_id,
+        )
+        return comment_orm.pk
