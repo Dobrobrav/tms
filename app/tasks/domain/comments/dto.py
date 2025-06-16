@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Self
 
 from pydantic import BaseModel
@@ -10,7 +11,7 @@ class CommentDTO(BaseModel):
     user_id: int
     task_id: int | None = None
     comment_id: int | None = None
-    create_time: datetime.datetime | None = None
+    create_time: datetime | None = None
 
     @classmethod
     def from_entity_comment(cls, comment_entity: CommentEntity) -> Self:
@@ -20,3 +21,7 @@ class CommentDTO(BaseModel):
             comment_id=comment_entity.comment_id,
             create_time=comment_entity.create_time,
         )
+
+    @property
+    def create_time_str(self) -> str:
+        return self.create_time.isoformat()
