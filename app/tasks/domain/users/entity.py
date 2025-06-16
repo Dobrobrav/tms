@@ -4,7 +4,7 @@ from tasks.domain.aggregate_root import AggregateRoot
 from tasks.domain.exceptions import DomainValidationError
 
 
-class User(AggregateRoot):
+class UserEntity(AggregateRoot):
     def __init__(
             self,
             name: str,
