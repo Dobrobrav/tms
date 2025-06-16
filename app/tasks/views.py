@@ -122,6 +122,8 @@ class CommentView(APIView):
         try:
             comment_dto, task_id = self._extract_data(request)
             comment_id = self.create_comment_usecase.execute(comment_dto, task_id)
+        except (DomainValidationError, ValidationError) as e:
+            return Response({'validation error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
         except Exception:
             return Response({'error': 'unknown error'}, status=HTTP_500_INTERNAL_SERVER_ERROR)
         else:
