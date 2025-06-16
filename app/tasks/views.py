@@ -139,7 +139,7 @@ class CommentView(APIView):
         try:
             comment_dto = self.get_comment_usecase.execute(comment_id)
         except Exception:
-            raise NotImplementedError()
+            return Response({'error': 'unknown error'}, status=HTTP_500_INTERNAL_SERVER_ERROR)
         else:
             return Response(
                 data={'user_id': comment_dto.user_id, 'text': comment_dto.text, 'create_time': comment_dto.create_time_str},

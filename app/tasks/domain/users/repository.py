@@ -14,7 +14,8 @@ class UserRepository(Repository):
     def set(self, entity: UserEntity) -> int:
         user_already_exists = entity.user_id
         if user_already_exists:
-            # NOTE (SemenK): not tested
+            raise NotImplementedError('this area is not covered with tests')
+
             UserModel.objects.filter(pk=entity.user_id).update(username=entity.name)
             return entity.user_id
         else:

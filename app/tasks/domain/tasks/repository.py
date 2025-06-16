@@ -31,7 +31,8 @@ class TaskRepository(Repository):
     def set(self, task_entity: TaskEntity) -> int:
         related_tasks_orm = TaskModel.objects.filter(pk__in=task_entity.related_task_ids)
         if task_already_exists := task_entity.task_id:
-            # NOTE (SemenK): not tested
+            raise NotImplementedError('this area is not covered with tests')
+
             TaskModel.objects.filter(pk=task_entity.task_id).update(
                 title=task_entity.title,
                 reporter_id=task_entity.reporter_id,
