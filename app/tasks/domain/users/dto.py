@@ -10,5 +10,8 @@ class UserDTO(BaseModel):
     user_id: int | None = None
 
     @classmethod
-    def from_user(cls, user: UserEntity) -> Self:
+    def from_entity(cls, user: UserEntity) -> Self:
         return cls(name=user.name, user_id=user.user_id)
+
+    def to_entity(self) -> UserEntity:
+        return UserEntity(name=self.name, user_id=self.user_id)

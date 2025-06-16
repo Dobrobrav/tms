@@ -15,7 +15,7 @@ class TaskDTO(BaseModel):
     assignee_id: int | None = None
     task_id: int | None = None
 
-    def to_task_entity(self) -> TaskEntity:
+    def to_entity(self) -> TaskEntity:
         return TaskEntity(
             title=self.title,
             reporter_id=self.reporter_id,
@@ -26,12 +26,12 @@ class TaskDTO(BaseModel):
         )
 
     @classmethod
-    def from_entity_task(cls, task: TaskEntity) -> Self:
+    def from_entity(cls, task: TaskEntity) -> Self:
         return cls(
             title=task.title,
             reporter_id=task.reporter_id,
             description=task.description,
-            comments=[CommentDTO.from_entity_comment(c) for c in task.comments],
+            comments=[CommentDTO.from_entity(c) for c in task.comments],
             related_task_ids=task.related_task_ids,
             assignee_id=task.assignee_id,
             task_id=task.task_id,

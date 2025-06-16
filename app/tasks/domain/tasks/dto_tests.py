@@ -16,9 +16,9 @@ def test__cast_entity_to_dto_then_cast_dto_to_entity_equals_original_entity() ->
         task_id=123,
     )
 
-    task_dto = TaskDTO.from_entity_task(original_task_entity)
+    task_dto = TaskDTO.from_entity(original_task_entity)
 
-    _assert_tasks_equal_without_id(task_dto.to_task_entity(), original_task_entity)
+    _assert_tasks_equal_without_id(task_dto.to_entity(), original_task_entity)
 
 
 def _assert_tasks_equal_without_id(task1: TaskEntity, task2: TaskEntity) -> None:
@@ -50,12 +50,12 @@ def test__dto_casted_from_entity_has_correct_data() -> None:
         task_id=(test_task_id := 123),
     )
 
-    task_dto = TaskDTO.from_entity_task(tesk_entity)
+    task_dto = TaskDTO.from_entity(tesk_entity)
 
     assert task_dto.task_id == test_task_id
     assert task_dto.comments == [
-        CommentDTO.from_entity_comment(test_comment_entity_1),
-        CommentDTO.from_entity_comment(test_comment_entity_2),
+        CommentDTO.from_entity(test_comment_entity_1),
+        CommentDTO.from_entity(test_comment_entity_2),
     ]
     assert task_dto.related_task_ids == test_related_task_ids
     assert task_dto.assignee_id == test_assignee_id

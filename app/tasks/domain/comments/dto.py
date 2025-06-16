@@ -13,7 +13,7 @@ class CommentDTO(BaseModel):
     create_time: datetime | None = None
 
     @classmethod
-    def from_entity_comment(cls, comment_entity: CommentEntity) -> Self:
+    def from_entity(cls, comment_entity: CommentEntity) -> Self:
         return cls(
             text=comment_entity.content,
             user_id=comment_entity.commenter_id,

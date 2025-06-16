@@ -12,7 +12,7 @@ def test__dto_casted_from_comment_entity_has_correct_data() -> None:
         create_time=datetime(2025, 6, 16)
     )
 
-    comment_dto = CommentDTO.from_entity_comment(comment_entity)
+    comment_dto = CommentDTO.from_entity(comment_entity)
 
     assert comment_dto.comment_id == comment_entity.comment_id
     assert comment_dto.text == comment_entity.content

@@ -9,7 +9,7 @@ class GetCommentUsecase(Usecase):
 
     def execute(self, comment_id: int) -> CommentDTO:
         comment_entity = self._task_repo.get_comment(comment_id)
-        return CommentDTO.from_entity_comment(comment_entity)
+        return CommentDTO.from_entity(comment_entity)
 
 
 def get_comment_usecase_factory() -> GetCommentUsecase:
