@@ -9,8 +9,8 @@ class CreateUserUsecase(Usecase):
         self._user_repo = user_repo
 
     def execute(self, user_dto: UserDTO) -> int:
-        user = UserEntity(name=user_dto.name)
-        user_id = self._user_repo.set(user)
+        user_entity = UserEntity(name=user_dto.name)
+        user_id = self._user_repo.set(user_entity)
         return user_id
 
 

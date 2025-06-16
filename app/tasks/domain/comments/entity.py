@@ -4,6 +4,9 @@ import icontract
 
 
 class CommentEntity:
+    """
+    All modifications of comments must go strictly through TaskEntity class!
+    """
     def __init__(
             self,
             user_id: int,

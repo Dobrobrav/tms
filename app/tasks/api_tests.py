@@ -1,4 +1,5 @@
 import pytest
+from rest_framework.reverse import reverse
 from rest_framework.test import APIClient
 
 
@@ -120,6 +121,25 @@ class TestCommentAPI:
         assert response.status_code == 201
         assert str.isdigit(str(response.data['id']))
 
+    def test__when_comment_is_created_then_it_can_be_retrieved(self, api_client: APIClient) -> None:
+        test_user_id = api_client.post('/tasks/users/', {'name': 'test comment user'}).data['id']
+        test_reporter_id = api_client.post('/tasks/users/', {'name': 'test reporter'}).data['id']
+        test_task_id = api_client.post(
+            '/tasks/tasks/',
+            data={'title': 'test_title', 'reporter_id': test_reporter_id},
+        ).data['id']
+        test_text = 'test text'
+
+        comment_id = api_client.post(
+            '/tasks/comments/',
+            data={'task_id': test_task_id, 'user_id': test_user_id, 'text': test_text},
+        ).data['id']
+        response = api_client.get(f'/tasks/comments/{comment_id}')
+
+        assert response.status_code == 200
+        assert response.data['user_id'] == test_user_id
+        assert response.data['text'] == test_text
+
     def test__when_comment_is_created_then_it_can_be_seen_in_task(self, api_client: APIClient) -> None:
         test_user_id = api_client.post('/tasks/users/', {'name': 'test comment user'}).data['id']
         test_reporter_id = api_client.post('/tasks/users/', {'name': 'test reporter'}).data['id']
@@ -129,7 +149,7 @@ class TestCommentAPI:
         ).data['id']
         test_text = 'test text'
         comment_id = api_client.post(
-            '/tasks/comments/',
+            reverse('comments'),
             data={'task_id': test_task_id, 'user_id': test_user_id, 'text': test_text},
         ).data['id']
 

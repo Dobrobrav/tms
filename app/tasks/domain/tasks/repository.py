@@ -67,3 +67,12 @@ class TaskRepository(Repository):
             commenter_id=comment_entity.commenter_id,
         )
         return comment_orm.pk
+
+    def get_comment(self, comment_id: int) -> CommentEntity:
+        comment_orm = CommentModel.objects.get(pk=comment_id)
+        return CommentEntity(
+            user_id=comment_orm.commenter_id,
+            comment_id=comment_orm.pk,
+            content=comment_orm.text,
+            create_time=comment_orm.create_time
+        )

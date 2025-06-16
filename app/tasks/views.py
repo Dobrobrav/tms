@@ -18,6 +18,7 @@ from tasks.domain.tasks.dto import TaskDTO
 from tasks.domain.use_cases.create_comment import CreateCommentUsecase
 from tasks.domain.use_cases.create_task import CreateTaskUsecase
 from tasks.domain.use_cases.create_user import CreateUserUsecase
+from tasks.domain.use_cases.get_comment import GetCommentUsecase
 from tasks.domain.use_cases.get_task import GetTaskUsecase
 from tasks.domain.use_cases.get_user import GetUserUsecase
 from tasks.domain.users.dto import UserDTO
@@ -115,6 +116,7 @@ class TaskView(APIView):
 
 class CommentView(APIView):
     create_comment_usecase: CreateCommentUsecase = None
+    get_comment_usecase: GetCommentUsecase = None
 
     def post(self, request: Request) -> Response:
         try:
@@ -132,3 +134,11 @@ class CommentView(APIView):
             user_id=request.data['user_id'],
             task_id=request.data['task_id'],
         )
+
+    def get(self, request: Request, comment_id: int) -> Response:
+        try:
+            comment_dto = self.get_comment_usecase.execute(comment_id)
+        except Exception:
+            raise NotImplementedError()
+        else:
+            return Response(data={'user_id': comment_dto.user_id, 'text': comment_dto.text}, status=HTTP_200_OK)
