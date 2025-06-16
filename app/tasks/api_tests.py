@@ -38,7 +38,7 @@ class TestTaskAPI:
         test_title = 'test title'
         test_reporter_id = self._create_user(api_client, username='foo')
         test_description = 'test description'
-        test_related_task_ids = self._create_2_tasks(api_client, reporter_id=self._create_user(api_client, 'baz'))
+        test_related_task_ids = self._create_2_tasks(api_client, reporter_id=self._create_user(api_client, username='baz'))
         test_assignee_id = self._create_user(api_client, username='bar')
 
         task_data = {
@@ -53,6 +53,32 @@ class TestTaskAPI:
 
         assert response.status_code == 201
         assert str.isdigit(str(response.data['id']))
+
+    def test__when_task_is_created_then_it_can_be_retrieved(self, api_client: APIClient) -> None:
+        test_title = 'test title'
+        test_reporter_id = self._create_user(api_client, username='foo')
+        test_description = 'test description'
+        test_related_task_ids = self._create_2_tasks(api_client, reporter_id=self._create_user(api_client, username='baz'))
+        test_assignee_id = self._create_user(api_client, username='bar')
+
+        task_data = {
+            'title': test_title,
+            'reporter_id': test_reporter_id,
+            'description': test_description,
+            'related_task_ids': test_related_task_ids,
+            'assignee_id': test_assignee_id,
+        }
+
+        created_task_id = api_client.post(path=reverse('tasks'), data=task_data).data['id']
+        get_task_response = api_client.get(path=reverse('task', kwargs={'task_id': created_task_id}))
+
+        assert get_task_response.status_code == 200
+        assert get_task_response.data['title'] == test_title
+        assert get_task_response.data['reporter_id'] == test_reporter_id
+        assert get_task_response.data['description'] == test_description
+        assert get_task_response.data['related_task_ids'] == test_related_task_ids
+        assert get_task_response.data['assignee_id'] == task_data['assignee_id']
+        assert get_task_response.data['id'] == created_task_id
 
     def _create_user(self, api_client: APIClient, username: str) -> int:
         response = api_client.post(reverse('users'), {'name': username})
@@ -75,34 +101,7 @@ class TestTaskAPI:
 
         return created_task_ids
 
-    def test__when_task_is_created_then_it_can_be_retrieved(self, api_client: APIClient) -> None:
-        test_title = 'test title'
-        test_reporter_id = self._create_user(api_client, username='foo')
-        test_description = 'test description'
-        test_related_task_ids = self._create_2_tasks(api_client, reporter_id=self._create_user(api_client, 'baz'))
-        test_assignee_id = self._create_user(api_client, username='bar')
 
-        task_data = {
-            'title': test_title,
-            'reporter_id': test_reporter_id,
-            'description': test_description,
-            'related_task_ids': test_related_task_ids,
-            'assignee_id': test_assignee_id,
-        }
-
-        created_task_id = api_client.post(path=reverse('tasks'), data=task_data).data['id']
-        get_task_response = api_client.get(path=reverse('task', kwargs={'task_id': created_task_id}))
-
-        assert get_task_response.status_code == 200
-        assert get_task_response.data['title'] == test_title
-        assert get_task_response.data['reporter_id'] == test_reporter_id
-        assert get_task_response.data['description'] == test_description
-        assert get_task_response.data['related_task_ids'] == test_related_task_ids
-        assert get_task_response.data['assignee_id'] == task_data['assignee_id']
-        assert get_task_response.data['id'] == created_task_id
-
-
-# TODO: how to check create_time ??
 @pytest.mark.django_db
 class TestCommentAPI:
 
