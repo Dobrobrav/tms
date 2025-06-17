@@ -1,3 +1,4 @@
+import random
 from datetime import datetime, timedelta
 
 import pytest
@@ -33,12 +34,39 @@ class TestUserAPI:
 
 
 @pytest.mark.django_db
+def create_user(username: str) -> int:
+    response = APIClient().post(reverse('users'), {'name': username})
+    return response.data['id']
+
+
+@pytest.mark.django_db
+def create_2_tasks(reporter_id: int) -> list[int]:
+    task_data_1 = {
+        'title': 'title_1',
+        'reporter_id': reporter_id,
+    }
+    task_data_2 = {
+        'title': 'title_2',
+        'reporter_id': reporter_id,
+    }
+
+    created_task_ids = [
+        APIClient().post(path=reverse('tasks'), data=task_data_1).data['id'],
+        APIClient().post(path=reverse('tasks'), data=task_data_2).data['id'],
+    ]
+
+    return created_task_ids
+
+
+@pytest.mark.django_db
 class TestTaskAPI:
+
     def test__when_task_is_created_api_returns_task_id(self, api_client: APIClient) -> None:
         test_title = 'test title'
         test_reporter_id = self._create_user(api_client, username='foo')
         test_description = 'test description'
-        test_related_task_ids = self._create_2_tasks(api_client, reporter_id=self._create_user(api_client, username='baz'))
+        test_related_task_ids = self._create_2_tasks(api_client,
+                                                     reporter_id=self._create_user(api_client, username='baz'))
         test_assignee_id = self._create_user(api_client, username='bar')
 
         task_data = {
@@ -58,7 +86,8 @@ class TestTaskAPI:
         test_title = 'test title'
         test_reporter_id = self._create_user(api_client, username='foo')
         test_description = 'test description'
-        test_related_task_ids = self._create_2_tasks(api_client, reporter_id=self._create_user(api_client, username='baz'))
+        test_related_task_ids = self._create_2_tasks(api_client,
+                                                     reporter_id=self._create_user(api_client, username='baz'))
         test_assignee_id = self._create_user(api_client, username='bar')
 
         task_data = {
@@ -80,11 +109,59 @@ class TestTaskAPI:
         assert get_task_response.data['assignee_id'] == task_data['assignee_id']
         assert get_task_response.data['id'] == created_task_id
 
-    def _create_user(self, api_client: APIClient, username: str) -> int:
+    @pytest.mark.parametrize(
+        'is_reporter_id_valid, is_assignee_id_valid, is_related_task_ids_valid',
+        [
+            (False, True, True),  # reporter_id is invalid
+            (True, False, True),  # assignee_id is invalid
+            (True, True, False),  # related_task_ids are invalid
+        ]
+    )
+    def test__invalid_entity_ids_cause_400_when_creating_task(
+            self,
+            api_client: APIClient,
+            is_reporter_id_valid: bool,
+            is_assignee_id_valid: bool,
+            is_related_task_ids_valid: bool,
+    ) -> None:
+        test_reporter_id = self._create_user(api_client, username='reporter', is_valid=is_reporter_id_valid, )
+        test_assignee_id = self._create_user(api_client, username='assignee', is_valid=is_assignee_id_valid)
+        test_related_task_ids = self._create_2_tasks(
+            api_client,
+            reporter_id=self._create_user(api_client, username='user for related tasks'),
+            is_valid=is_related_task_ids_valid,
+        )
+
+        task_data = {
+            'title': 'test_title',
+            'reporter_id': test_reporter_id,
+            'description': 'test_description',
+            'related_task_ids': test_related_task_ids,
+            'assignee_id': test_assignee_id,
+        }
+
+        task_response = api_client.post('/tasks/tasks/', task_data)
+
+        assert task_response.status_code == 400
+
+    @staticmethod
+    def _create_user(api_client: APIClient, username: str | None = None, is_valid: bool = True) -> int:
+        if not is_valid:
+            return random.randint(-100_000, -10_000)
+
+        assert username is not None
         response = api_client.post(reverse('users'), {'name': username})
         return response.data['id']
 
-    def _create_2_tasks(self, api_client: APIClient, reporter_id: int) -> list[int]:
+    @staticmethod
+    def _create_2_tasks(api_client: APIClient, reporter_id: int | None = None, is_valid: bool = True) -> list[int]:
+        if not is_valid:
+            return [
+                random.randint(-100_000, -10_000),
+                random.randint(-100_000, -10_000),
+            ]
+
+        assert reporter_id is not None
         task_data_1 = {
             'title': 'title_1',
             'reporter_id': reporter_id,

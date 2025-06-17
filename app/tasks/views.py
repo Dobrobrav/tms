@@ -95,7 +95,7 @@ class TaskView(APIView):
                 InvalidReporterID, InvalidAssigneeID,
                 InvalidRelatedTaskIDs,
         ) as e:
-            return Response({'error': e}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
         except TitleEmptyError:
             return Response('title must not be empty', status=status.HTTP_400_BAD_REQUEST)
         except Exception:
