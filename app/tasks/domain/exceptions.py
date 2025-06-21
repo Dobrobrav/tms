@@ -21,6 +21,12 @@ class InvalidAssigneeID(ApplicationError):
         self.assignee_id = assignee_id
 
 
+class InvalidTaskID(ApplicationError):
+    def __init__(self, task_id: int) -> None:
+        super().__init__(f'invalid task ID: {task_id}')
+        self.task_id = task_id
+
+
 class InvalidRelatedTaskIDs(ApplicationError):
     def __init__(self, task_ids: Sequence[int]) -> None:
         """ Some or all of the related_task_ids are invalid """

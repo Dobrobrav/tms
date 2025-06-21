@@ -2,6 +2,7 @@ from typing import Sequence
 
 from tasks.domain.base_repository import Repository
 from tasks.domain.comments.entity import CommentEntity
+from tasks.domain.exceptions import InvalidTaskID
 from tasks.domain.tasks.entity import TaskEntity
 from tasks.models import TaskModel, CommentModel
 
@@ -9,7 +10,10 @@ from tasks.models import TaskModel, CommentModel
 class TaskRepository(Repository):
     def get(self, entity_id: int) -> TaskEntity:
         # TODO: make it prefetch all comments?
-        task_orm = TaskModel.objects.get(pk=entity_id)
+        try:
+            task_orm = TaskModel.objects.get(pk=entity_id)
+        except TaskModel.DoesNotExist:
+            raise InvalidTaskID(task_id=entity_id)
         return TaskEntity(
             title=task_orm.title,
             reporter_id=task_orm.reporter_id,

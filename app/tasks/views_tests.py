@@ -2,19 +2,19 @@ from unittest.mock import Mock
 
 import pytest
 from pydantic import ValidationError
+from rest_framework.reverse import reverse
 from rest_framework.test import APIRequestFactory
 
 from tasks.domain.exceptions import (
     TitleEmptyError,
     DomainValidationError,
 )
-from tasks.domain.use_cases.create_comment import CreateCommentUsecase
 from tasks.domain.use_cases.create_user import CreateUserUsecase
 from tasks.domain.use_cases.get_user import GetUserUsecase
-from tasks.views import TaskView, UserView, CommentView
+from tasks.views import TaskView, UserView
 
 
-class TestCreatingTask:
+class TestTaskView:
 
     @pytest.mark.parametrize(
         "exception, status_code",
@@ -23,7 +23,7 @@ class TestCreatingTask:
             (Exception, 500),
         ],
     )
-    def test__usecase_exceptions_cause_error_status_codes(
+    def test__create_task_usecase_exceptions_cause_error_status_codes(
             self,
             exception: Exception,
             status_code: int,

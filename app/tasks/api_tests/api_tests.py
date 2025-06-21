@@ -65,8 +65,11 @@ class TestTaskAPI:
         test_title = 'test title'
         test_reporter_id = self._create_user(api_client, username='foo')
         test_description = 'test description'
-        test_related_task_ids = self._create_2_tasks(api_client,
-                                                     reporter_id=self._create_user(api_client, username='baz'))
+        test_related_task_ids = self._create_n_tasks(
+            api_client,
+            reporter_id=self._create_user(api_client, username='baz'),
+            n=2,
+        )
         test_assignee_id = self._create_user(api_client, username='bar')
 
         task_data = {
@@ -86,8 +89,11 @@ class TestTaskAPI:
         test_title = 'test title'
         test_reporter_id = self._create_user(api_client, username='foo')
         test_description = 'test description'
-        test_related_task_ids = self._create_2_tasks(api_client,
-                                                     reporter_id=self._create_user(api_client, username='baz'))
+        test_related_task_ids = self._create_n_tasks(
+            api_client,
+            reporter_id=self._create_user(api_client, username='baz'),
+            n=2,
+        )
         test_assignee_id = self._create_user(api_client, username='bar')
 
         task_data = {
@@ -124,12 +130,13 @@ class TestTaskAPI:
             is_assignee_id_valid: bool,
             is_related_task_ids_valid: bool,
     ) -> None:
-        test_reporter_id = self._create_user(api_client, username='reporter', is_valid=is_reporter_id_valid, )
+        test_reporter_id = self._create_user(api_client, username='reporter', is_valid=is_reporter_id_valid)
         test_assignee_id = self._create_user(api_client, username='assignee', is_valid=is_assignee_id_valid)
-        test_related_task_ids = self._create_2_tasks(
+        test_related_task_ids = self._create_n_tasks(
             api_client,
             reporter_id=self._create_user(api_client, username='user for related tasks'),
-            is_valid=is_related_task_ids_valid,
+            should_tasks_be_valid=is_related_task_ids_valid,
+            n=2,
         )
 
         task_data = {
@@ -144,6 +151,13 @@ class TestTaskAPI:
 
         assert task_response.status_code == 400
 
+    def test__invalid_task_id_cause_400_when_getting_task(self, api_client: APIClient) -> None:
+        invalid_task_id = self._create_n_tasks(api_client, n=1, should_tasks_be_valid=False)[0]
+
+        get_task_response = api_client.get(path=reverse('task', kwargs={'task_id': invalid_task_id}))
+
+        assert get_task_response.status_code == 400
+
     @staticmethod
     def _create_user(api_client: APIClient, username: str | None = None, is_valid: bool = True) -> int:
         if not is_valid:
@@ -154,12 +168,14 @@ class TestTaskAPI:
         return response.data['id']
 
     @staticmethod
-    def _create_2_tasks(api_client: APIClient, reporter_id: int | None = None, is_valid: bool = True) -> list[int]:
-        if not is_valid:
-            return [
-                random.randint(-100_000, -10_000),
-                random.randint(-100_000, -10_000),
-            ]
+    def _create_n_tasks(
+            api_client: APIClient,
+            reporter_id: int | None = None,
+            should_tasks_be_valid: bool = True,
+            n: int = 1,
+    ) -> list[int]:
+        if not should_tasks_be_valid:
+            return [random.randint(10_000, 100_000) for _ in range(n)]
 
         assert reporter_id is not None
         task_data_1 = {

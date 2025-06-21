@@ -13,6 +13,7 @@ from tasks.domain.exceptions import (
     InvalidRelatedTaskIDs,
     TitleEmptyError,
     DomainValidationError,
+    InvalidTaskID,
 )
 from tasks.domain.tasks.dto import TaskDTO
 from tasks.domain.use_cases.create_comment import CreateCommentUsecase
@@ -65,7 +66,16 @@ class TaskView(APIView):
 
     def get(self, request: Request, task_id: int) -> Response:
         # TODO: add error handling (first write tests)
-        task_dto = self.get_task_usecase.execute(task_id)
+        try:
+            task_dto = self.get_task_usecase.execute(task_id)
+        except InvalidTaskID as e:
+            return Response({'validation error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception:
+            return Response(f'unknown error', status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return self._form_get_response(task_dto, task_id)
+
+    def _form_get_response(self, task_dto, task_id):
         return Response(
             data={
                 'id': task_id,
