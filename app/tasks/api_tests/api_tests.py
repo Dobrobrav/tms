@@ -32,7 +32,10 @@ class TestUserAPI:
         assert created_user_response.data['name'] == user_data['name']
         assert created_user_response.data['id'] == created_user_id
 
-    # def test__
+    def test__when_creating_user__empty_name_causes_400(self, api_client: APIClient) -> None:
+        create_user_response = api_client.post(reverse('users'), data={'name': ''})
+
+        assert create_user_response.status_code == 400
 
 
 @pytest.mark.django_db
@@ -101,7 +104,7 @@ class TestTaskAPI:
             (True, True, False),  # related_task_ids are invalid
         ]
     )
-    def test__invalid_entity_ids_cause_400_when_creating_task(
+    def test__when_creating_task__invalid_entity_ids_cause_400(
             self,
             api_client: APIClient,
             is_reporter_id_valid: bool,
