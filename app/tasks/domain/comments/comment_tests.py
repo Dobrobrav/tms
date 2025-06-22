@@ -2,7 +2,7 @@ from datetime import datetime
 
 import pytest
 
-from tasks.domain.comments.entity import CommentEntity
+from tasks.domain.comments.comment import CommentEntity
 from tasks.domain.exceptions import DomainValidationError
 
 

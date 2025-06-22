@@ -5,7 +5,7 @@ import icontract
 
 from tasks.domain.aggregate_root import AggregateRoot
 from tasks.domain.comments.dto import CommentDTO
-from tasks.domain.comments.entity import CommentEntity
+from tasks.domain.comments.comment import CommentEntity
 from tasks.domain.exceptions import DomainValidationError
 
 
