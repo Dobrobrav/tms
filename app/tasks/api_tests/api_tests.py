@@ -252,7 +252,7 @@ class TestCommentAPI:
     def test__when_comment_is_created_then_it_can_be_seen_in_task(self, api_client: APIClient) -> None:
         test_user_id = self._create_user(api_client, 'test_commenter_id')
         test_reporter_id = self._create_user(api_client, 'test_reporter_id')
-        test_task_id = self._create_task(api_client, test_reporter_id)
+        test_task_id = create_n_tasks(api_client, test_reporter_id, n=1)[0]
         test_text = 'test text'
         comment_id = self._create_comment(api_client, test_task_id, test_text, test_user_id)
 
