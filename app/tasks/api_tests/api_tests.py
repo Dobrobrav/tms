@@ -52,14 +52,6 @@ class TestUserAPI:
         assert get_user_response.status_code == 404
 
 
-def create_user(api_client: APIClient, username: str | None = None, is_valid: bool = True) -> int:
-    if not is_valid:
-        return random.randint(-100_000, -10_000)
-
-    assert username is not None
-    response = api_client.post(reverse('users'), {'name': username})
-    return response.data['id']
-
 @pytest.mark.django_db
 class TestTaskAPI:
 
@@ -82,10 +74,10 @@ class TestTaskAPI:
             'assignee_id': test_assignee_id,
         }
 
-        response = api_client.post(path=reverse('tasks'), data=task_data)
+        create_task_response = api_client.post(path=reverse('tasks'), data=task_data, format='json')
 
-        assert response.status_code == 201
-        assert str.isdigit(str(response.data['id']))
+        assert create_task_response.status_code == 201
+        assert str.isdigit(str(create_task_response.data['id']))
 
     def test__when_task_is_created_then_it_can_be_retrieved(self, api_client: APIClient) -> None:
         test_title = 'test title'
@@ -106,8 +98,8 @@ class TestTaskAPI:
             'assignee_id': test_assignee_id,
         }
 
-        created_task_id = api_client.post(path=reverse('tasks'), data=task_data).data['id']
-        get_task_response = api_client.get(path=reverse('task', kwargs={'task_id': created_task_id}))
+        created_task_id = api_client.post(reverse('tasks'), data=task_data, format='json').data['id']
+        get_task_response = api_client.get(reverse('task', kwargs={'task_id': created_task_id}), format='json')
 
         assert get_task_response.status_code == 200
         assert get_task_response.data['title'] == test_title
@@ -191,21 +183,38 @@ class TestTaskAPI:
             return [random.randint(10_000, 100_000) for _ in range(n)]
 
         assert reporter_id is not None
-        task_data_1 = {
-            'title': 'title_1',
-            'reporter_id': reporter_id,
-        }
-        task_data_2 = {
-            'title': 'title_2',
-            'reporter_id': reporter_id,
-        }
 
-        created_task_ids = [
-            api_client.post(path=reverse('tasks'), data=task_data_1).data['id'],
-            api_client.post(path=reverse('tasks'), data=task_data_2).data['id'],
-        ]
+        created_task_ids = []
+        for task_count in range(n):
+            task_data = {
+                'title': f'title_{task_count}',
+                'reporter_id': reporter_id,
+            }
+            created_task_ids.append(api_client.post(path=reverse('tasks'), data=task_data).data['id'])
 
         return created_task_ids
+
+
+def create_n_tasks(
+        api_client: APIClient,
+        reporter_id: int | None = None,
+        should_tasks_be_valid: bool = True,
+        n: int = 1,
+) -> list[int]:
+    if not should_tasks_be_valid:
+        return [random.randint(10_000, 100_000) for _ in range(n)]
+
+    assert reporter_id is not None
+
+    created_task_ids = []
+    for task_count in range(n):
+        task_data = {
+            'title': f'title_{task_count}',
+            'reporter_id': reporter_id,
+        }
+        created_task_ids.append(api_client.post(path=reverse('tasks'), data=task_data, format='json').data['id'])
+
+    return created_task_ids
 
 
 @pytest.mark.django_db
@@ -214,12 +223,13 @@ class TestCommentAPI:
     def test__when_comment_is_created_api_returns_comment_id(self, api_client: APIClient) -> None:
         test_user_id = self._create_user(api_client, 'test_commenter_id')
         test_reporter_id = self._create_user(api_client, 'test_reporter_id')
-        test_task_id = self._create_task(api_client, test_reporter_id)
+        test_task_id = create_n_tasks(api_client, test_reporter_id, n=1)[0]
         test_text = 'test text'
 
         comment_response = api_client.post(
             path=reverse('comments'),
             data={'task_id': test_task_id, 'user_id': test_user_id, 'text': test_text},
+            format='json',
         )
 
         assert comment_response.status_code == 201
@@ -228,7 +238,7 @@ class TestCommentAPI:
     def test__when_comment_is_created_then_it_can_be_retrieved(self, api_client: APIClient) -> None:
         test_user_id = self._create_user(api_client, 'test_commenter_id')
         test_reporter_id = self._create_user(api_client, 'test_reporter_id')
-        test_task_id = self._create_task(api_client, test_reporter_id)
+        test_task_id = create_n_tasks(api_client, test_reporter_id, n=1)[0]
         test_text = 'test text'
         comment_id = self._create_comment(api_client, test_task_id, test_text, test_user_id)
 
@@ -258,18 +268,14 @@ class TestCommentAPI:
         ]
 
     def _create_user(self, api_client: APIClient, username: str):
-        return api_client.post(reverse('users'), {'name': username}).data['id']
+        return api_client.post(reverse('users'), {'name': username}, format='json').data['id']
 
-    def _create_task(self, api_client: APIClient, test_reporter_id: int):
-        return api_client.post(
-            path=reverse('tasks'),
-            data={'title': 'test_title', 'reporter_id': test_reporter_id},
-        ).data['id']
 
     def _create_comment(self, api_client: APIClient, test_task_id: int, test_text: str, test_user_id: int):
         return api_client.post(
             path=reverse('comments'),
             data={'task_id': test_task_id, 'user_id': test_user_id, 'text': test_text},
+            format='json',
         ).data['id']
 
     def _assert_create_time_roughly_equals_now(self, create_time_str: str):
