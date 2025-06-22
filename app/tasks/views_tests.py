@@ -28,9 +28,9 @@ class TestTaskView:
 
         assert response.status_code == 500
 
-    def test__get_task_usecase_generic_exception_causes_500(self) -> None:
-        view = TaskView.as_view(create_task_usecase=(use_case := Mock()))
-        use_case.execute.side_effect = Exception()
+    def test__generic_exception_from_get_task_usecase_causes_500(self) -> None:
+        view = TaskView.as_view(create_task_usecase=(s_use_case := Mock()))
+        s_use_case.execute.side_effect = Exception()
         request = APIRequestFactory().get(reverse('task', kwargs={'task_id': (task_id := 123)}))
 
         response = view(request, task_id=task_id)
@@ -48,12 +48,12 @@ class TestGettingUser:
         ]
     )
     def test__usecase_exceptions_cause_error_status_codes(self, exception: Exception, status_code: int) -> None:
-        sut_view = UserView.as_view(get_user_usecase=(stub_use_case := Mock(spec=GetUserUsecase)))
-        stub_use_case.execute.side_effect = exception
+        view = UserView.as_view(get_user_usecase=(s_use_case := Mock(spec=GetUserUsecase)))
+        s_use_case.execute.side_effect = exception
         test_user_id = 123
         request = APIRequestFactory().get(f'/tasks/users/{test_user_id}')
 
-        response = sut_view(request, user_id=test_user_id)
+        response = view(request, user_id=test_user_id)
 
         assert response.status_code == status_code
 
