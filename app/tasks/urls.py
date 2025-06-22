@@ -15,7 +15,7 @@ urlpatterns = [
         name='users',
     ),
     path(
-        route='users/<int:user_id>',
+        route='users/<user_id>',
         view=views.UserView.as_view(get_user_usecase=get_user_usecase_factory()),
         name='user',
     ),

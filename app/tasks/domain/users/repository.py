@@ -2,13 +2,17 @@ from typing import Sequence
 from uuid import UUID
 
 from tasks.domain.base_repository import Repository
+from tasks.domain.exceptions import UserIdNotExists
 from tasks.domain.users.user import UserEntity
 from tms_types import UserModel
 
 
 class UserRepository(Repository):
     def get(self, entity_id: int) -> UserEntity:
-        user = UserModel.objects.get(pk=entity_id)
+        try:
+            user = UserModel.objects.get(pk=entity_id)
+        except UserModel.DoesNotExist:
+            raise UserIdNotExists(entity_id)
         return UserEntity(name=user.username, user_id=user.pk)
 
     def set(self, entity: UserEntity) -> int:

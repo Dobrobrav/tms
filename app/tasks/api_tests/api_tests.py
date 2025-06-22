@@ -37,6 +37,28 @@ class TestUserAPI:
 
         assert create_user_response.status_code == 400
 
+    def test__when_getting_user__invalid_id_causes_400(self, api_client: APIClient):
+        invalid_id = 'foobar'
+
+        get_user_response = api_client.get(reverse('user', kwargs={'user_id': invalid_id}))
+
+        assert get_user_response.status_code == 400
+
+    def test__when_getting_user__non_existent_id_causes_404(self, api_client: APIClient):
+        non_existent_id = 123
+
+        get_user_response = api_client.get(reverse('user', kwargs={'user_id': non_existent_id}))
+
+        assert get_user_response.status_code == 404
+
+
+def create_user(api_client: APIClient, username: str | None = None, is_valid: bool = True) -> int:
+    if not is_valid:
+        return random.randint(-100_000, -10_000)
+
+    assert username is not None
+    response = api_client.post(reverse('users'), {'name': username})
+    return response.data['id']
 
 @pytest.mark.django_db
 class TestTaskAPI:

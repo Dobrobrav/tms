@@ -13,7 +13,7 @@ from tasks.domain.exceptions import (
     InvalidRelatedTaskIDs,
     TitleEmptyError,
     DomainValidationError,
-    InvalidTaskID,
+    InvalidTaskID, UserIdNotExists,
 )
 from tasks.domain.tasks.dto import TaskDTO
 from tasks.domain.use_cases.create_comment import CreateCommentUsecase
@@ -32,11 +32,14 @@ class UserView(APIView):
     create_user_usecase: CreateUserUsecase = None
     get_user_usecase: GetUserUsecase = None
 
-    def get(self, request: Request, user_id: int) -> Response:
+    def get(self, request: Request, user_id: str) -> Response:
         try:
-            user_dto = self.get_user_usecase.execute(user_id)
+            user_dto = UserDTO(user_id=user_id)
+            user_dto = self.get_user_usecase.execute(user_dto.user_id)
         except (DomainValidationError, ValidationError) as e:
             return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)
+        except UserIdNotExists as e:
+            return Response({'error': str(e)}, status.HTTP_404_NOT_FOUND)
         except Exception:
             return Response({'error': 'unknown error'}, status.HTTP_500_INTERNAL_SERVER_ERROR)
         else:

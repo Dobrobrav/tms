@@ -6,7 +6,7 @@ from tasks.domain.users.user import UserEntity
 
 
 class UserDTO(BaseModel):
-    name: str
+    name: str | None = None
     user_id: int | None = None
 
     @classmethod
