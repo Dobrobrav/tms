@@ -142,7 +142,7 @@ class TestTaskAPI:
             'assignee_id': test_assignee_id,
         }
 
-        task_response = api_client.post('/tasks/tasks/', task_data)
+        task_response = api_client.post(reverse('tasks'), task_data)
 
         assert task_response.status_code == 400
 

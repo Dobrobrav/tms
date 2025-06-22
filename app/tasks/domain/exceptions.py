@@ -8,7 +8,7 @@ class ApplicationError(Exception):
 class TitleEmptyError(ApplicationError):
     ...
 
-class UserIdNotExists(ApplicationError): # TODO: remove "id" part
+class UserNotExists(ApplicationError): # TODO: remove "id" part
     def __init__(self, user_id: int) -> None:
         super().__init__(f'user ID {user_id} does not exist')
         self.user_id = user_id

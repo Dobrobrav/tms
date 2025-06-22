@@ -10,7 +10,8 @@ from tasks.domain.exceptions import (
     InvalidTaskID,
     InvalidReporterID,
     InvalidAssigneeID,
-    InvalidRelatedTaskIDs, TitleEmptyError,
+    InvalidRelatedTaskIDs,
+    TitleEmptyError,
 )
 from tasks.domain.tasks.dto import TaskDTO
 from tasks.domain.use_cases.create_task import CreateTaskUsecase

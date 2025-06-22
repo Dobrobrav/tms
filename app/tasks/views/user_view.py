@@ -4,7 +4,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from tasks.domain.exceptions import DomainValidationError, UserIdNotExists
+from tasks.domain.exceptions import DomainValidationError, UserNotExists
 from tasks.domain.use_cases.create_user import CreateUserUsecase
 from tasks.domain.use_cases.get_user import GetUserUsecase
 from tasks.domain.users.dto import UserDTO
@@ -21,7 +21,7 @@ class UserView(APIView):
             user_dto = self.get_user_usecase.execute(user_dto.user_id)
         except (DomainValidationError, ValidationError) as e:
             return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)
-        except UserIdNotExists as e:
+        except UserNotExists as e:
             return Response({'error': str(e)}, status.HTTP_404_NOT_FOUND)
         except Exception:
             return Response({'error': 'unknown error'}, status.HTTP_500_INTERNAL_SERVER_ERROR)
