@@ -2,7 +2,7 @@ from typing import Sequence
 
 from tasks.domain.base_repository import Repository
 from tasks.domain.comments.comment import CommentEntity
-from tasks.domain.exceptions import InvalidTaskID
+from tasks.domain.exceptions import InvalidTaskID, CommentNotExists
 from tasks.domain.tasks.comment import TaskEntity
 from tasks.models import TaskModel, CommentModel
 
@@ -74,7 +74,10 @@ class TaskRepository(Repository):
         return comment_orm.pk
 
     def get_comment(self, comment_id: int) -> CommentEntity:
-        comment_orm = CommentModel.objects.get(pk=comment_id)
+        try:
+            comment_orm = CommentModel.objects.get(pk=comment_id)
+        except CommentModel.DoesNotExist:
+            raise CommentNotExists(comment_id)
         return CommentEntity(
             user_id=comment_orm.commenter_id,
             comment_id=comment_orm.pk,

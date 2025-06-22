@@ -245,6 +245,20 @@ class TestCommentAPI:
             }
         ]
 
+    def test__when_getting_comment__invalid_id_causes_400(self, api_client: APIClient):
+        invalid_id = 'foobar'
+
+        get_comment_response = api_client.get(reverse('comment', kwargs={'comment_id': invalid_id}))
+
+        assert get_comment_response.status_code == 400
+
+    def test__when_getting_user__non_existent_id_causes_404(self, api_client: APIClient):
+        non_existent_id = 123
+
+        get_user_response = api_client.get(reverse('comment', kwargs={'comment_id': non_existent_id}))
+
+        assert get_user_response.status_code == 404
+
     def _create_user(self, api_client: APIClient, username: str):
         return api_client.post(reverse('users'), {'name': username}, format='json').data['id']
 

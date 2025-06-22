@@ -7,8 +7,8 @@ from tasks.domain.comments.comment import CommentEntity
 
 
 class CommentDTO(BaseModel):
-    text: str
-    user_id: int
+    text: str | None = None
+    user_id: int | None = None
     comment_id: int | None = None
     create_time: datetime | None = None
 

@@ -35,7 +35,7 @@ urlpatterns = [
         name='comments',
     ),
     path(
-        route='comments/<int:comment_id>',
+        route='comments/<comment_id>',
         view=views.CommentView.as_view(get_comment_usecase=get_comment_usecase_factory()),
         name='comment',
     ),
