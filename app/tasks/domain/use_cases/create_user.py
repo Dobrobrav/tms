@@ -1,6 +1,5 @@
 from tasks.domain.use_cases.base import Usecase
 from tasks.domain.users.dto import UserDTO
-from tasks.domain.users.entity import UserEntity
 from tasks.domain.users.repository import UserRepository
 
 
