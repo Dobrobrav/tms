@@ -59,7 +59,7 @@ class TestTaskAPI:
         test_title = 'test title'
         test_reporter_id = self._create_user(api_client, username='foo')
         test_description = 'test description'
-        test_related_task_ids = self._create_n_tasks(
+        test_related_task_ids = create_n_tasks(
             api_client,
             reporter_id=self._create_user(api_client, username='baz'),
             n=2,
@@ -83,7 +83,7 @@ class TestTaskAPI:
         test_title = 'test title'
         test_reporter_id = self._create_user(api_client, username='foo')
         test_description = 'test description'
-        test_related_task_ids = self._create_n_tasks(
+        test_related_task_ids = create_n_tasks(
             api_client,
             reporter_id=self._create_user(api_client, username='baz'),
             n=2,
@@ -127,7 +127,7 @@ class TestTaskAPI:
     ) -> None:
         test_reporter_id = self._create_user(api_client, username='reporter', is_valid=is_reporter_id_valid)
         test_assignee_id = self._create_user(api_client, username='assignee', is_valid=is_assignee_id_valid)
-        test_related_task_ids = self._create_n_tasks(
+        test_related_task_ids = create_n_tasks(
             api_client,
             reporter_id=self._create_user(api_client, username='user for related tasks'),
             should_tasks_be_valid=is_related_task_ids_valid,
@@ -147,7 +147,7 @@ class TestTaskAPI:
         assert task_response.status_code == 400
 
     def test__invalid_task_id_cause_400_when_getting_task(self, api_client: APIClient) -> None:
-        invalid_task_id = self._create_n_tasks(api_client, n=1, should_tasks_be_valid=False)[0]
+        invalid_task_id = create_n_tasks(api_client, n=1, should_tasks_be_valid=False)[0]
 
         get_task_response = api_client.get(path=reverse('task', kwargs={'task_id': invalid_task_id}))
 
@@ -171,28 +171,6 @@ class TestTaskAPI:
         assert username is not None
         response = api_client.post(reverse('users'), {'name': username})
         return response.data['id']
-
-    @staticmethod
-    def _create_n_tasks(
-            api_client: APIClient,
-            reporter_id: int | None = None,
-            should_tasks_be_valid: bool = True,
-            n: int = 1,
-    ) -> list[int]:
-        if not should_tasks_be_valid:
-            return [random.randint(10_000, 100_000) for _ in range(n)]
-
-        assert reporter_id is not None
-
-        created_task_ids = []
-        for task_count in range(n):
-            task_data = {
-                'title': f'title_{task_count}',
-                'reporter_id': reporter_id,
-            }
-            created_task_ids.append(api_client.post(path=reverse('tasks'), data=task_data).data['id'])
-
-        return created_task_ids
 
 
 def create_n_tasks(
@@ -269,7 +247,6 @@ class TestCommentAPI:
 
     def _create_user(self, api_client: APIClient, username: str):
         return api_client.post(reverse('users'), {'name': username}, format='json').data['id']
-
 
     def _create_comment(self, api_client: APIClient, test_task_id: int, test_text: str, test_user_id: int):
         return api_client.post(
