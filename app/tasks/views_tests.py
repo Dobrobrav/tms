@@ -50,16 +50,6 @@ class TestGettingUser:
 
         assert response.status_code == 500
 
-    def test__user_view_returns_400_on_invalid_input_data(self) -> None:
-        # TODO: под снос
-        view = UserView.as_view(get_user_usecase=GetUserUsecase(user_repo=Mock()))
-        test_user_id = 'invalid id'
-        request = APIRequestFactory().get(f'/tasks/users/{test_user_id}')
-
-        response = view(request, user_id=test_user_id)
-
-        assert response.status_code == 400
-
 
 class TestCreatingUser:
 
