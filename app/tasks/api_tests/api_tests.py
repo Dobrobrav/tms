@@ -158,6 +158,16 @@ class TestTaskAPI:
 
         assert get_task_response.status_code == 400
 
+    def test__when_creating_task__empty_title_causes_400(self, api_client: APIClient) -> None:
+        task_data = {
+            'title': '',
+            'reporter_id': self._create_user(api_client, username='reporter', is_valid=True),
+        }
+
+        create_task_response = api_client.post(reverse('tasks'), data=task_data)
+
+        assert create_task_response.status_code == 400
+
     @staticmethod
     def _create_user(api_client: APIClient, username: str | None = None, is_valid: bool = True) -> int:
         if not is_valid:

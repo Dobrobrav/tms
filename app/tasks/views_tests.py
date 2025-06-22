@@ -6,7 +6,6 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APIRequestFactory
 
 from tasks.domain.exceptions import (
-    TitleEmptyError,
     DomainValidationError,
 )
 from tasks.domain.use_cases.create_user import CreateUserUsecase
@@ -16,32 +15,18 @@ from tasks.views import TaskView, UserView
 
 class TestTaskView:
 
-    @pytest.mark.parametrize(
-        "exception, status_code",
-        [
-            (TitleEmptyError(123), 400),
-            (Exception, 500),
-        ],
-    )
-    def test__create_task_usecase_exceptions_cause_error_status_codes(
-            self,
-            exception: Exception,
-            status_code: int,
-    ) -> None:
-        view = TaskView.as_view(create_task_usecase=(use_case := Mock()))
-        use_case.execute.side_effect = exception
+    def test__generic_exception_from_create_task_usecase_causes_500(self) -> None:
+        view = TaskView.as_view(create_task_usecase=(m_use_case := Mock()))
+        m_use_case.execute.side_effect = Exception()
         task_data = {
             'title': 'test title',
             'reporter_id': 123,
-            'description': 'test description',
-            'related_task_ids': [14, 88, 228],
-            'assignee_id': 456,
         }
-        request = APIRequestFactory().post("/tasks/tasks/", task_data)
+        request = APIRequestFactory().post(reverse('tasks'), task_data)
 
         response = view(request)
 
-        assert response.status_code == status_code
+        assert response.status_code == 500
 
     def test__get_task_usecase_generic_exception_causes_500(self) -> None:
         view = TaskView.as_view(create_task_usecase=(use_case := Mock()))
