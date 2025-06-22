@@ -15,16 +15,6 @@ class TaskDTO(BaseModel):
     assignee_id: int | None = None
     task_id: int | None = None
 
-    def to_entity(self) -> TaskEntity: # TODO: remove
-        return TaskEntity(
-            title=self.title,
-            reporter_id=self.reporter_id,
-            description=self.description,
-            related_task_ids=self.related_task_ids,
-            assignee_id=self.assignee_id,
-            task_id=self.task_id,
-        )
-
     @classmethod
     def from_entity(cls, task: TaskEntity) -> Self:
         return cls(

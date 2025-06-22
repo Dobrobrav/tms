@@ -4,7 +4,6 @@ from typing import Iterable
 import icontract
 
 from tasks.domain.aggregate_root import AggregateRoot
-from tasks.domain.comments.dto import CommentDTO
 from tasks.domain.comments.comment import CommentEntity
 from tasks.domain.exceptions import DomainValidationError
 
@@ -24,7 +23,7 @@ class TaskEntity(AggregateRoot):
         self.description = description
         self.reporter_id = reporter_id
         self.assignee_id = assignee_id
-        self._comments: list[CommentEntity] = comments or [] # TODO: write test to fix
+        self._comments: list[CommentEntity] = comments or []  # TODO: write test to fix
         self._related_task_ids: list[int] = list(related_task_ids or []) or []
         self._task_id = task_id
 
@@ -53,10 +52,10 @@ class TaskEntity(AggregateRoot):
         return self._comments.copy()
 
     # TODO: remove dto. take args instead
-    def create_comment(self, comment_dto: CommentDTO, create_time: datetime.datetime) -> CommentEntity:
+    def create_comment(self, user_id: int, text: str, create_time: datetime.datetime) -> CommentEntity:
         comment_entity = CommentEntity(
-            user_id=comment_dto.user_id,
-            content=comment_dto.text,
+            user_id=user_id,
+            content=text,
             create_time=create_time,
         )
         self._comments.append(comment_entity)

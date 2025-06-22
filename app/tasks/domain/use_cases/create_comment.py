@@ -11,7 +11,11 @@ class CreateCommentUsecase(Usecase):
 
     def execute(self, comment_dto: CommentDTO, task_id: int) -> int:
         task_entity = self._task_repo.get(task_id)
-        comment_entity = task_entity.create_comment(comment_dto, create_time=datetime.datetime.now())
+        comment_entity = task_entity.create_comment(
+            user_id=comment_dto.user_id,
+            text=comment_dto.text,
+            create_time=datetime.datetime.now(),
+        )
         comment_id = self._task_repo.set_comment(task_entity, comment_entity)
         return comment_id
 

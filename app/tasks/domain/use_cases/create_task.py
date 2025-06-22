@@ -1,4 +1,5 @@
 from tasks.domain.exceptions import InvalidReporterID, InvalidAssigneeID, InvalidRelatedTaskIDs
+from tasks.domain.tasks.comment import TaskEntity
 from tasks.domain.tasks.dto import TaskDTO
 from tasks.domain.tasks.repository import TaskRepository
 from tasks.domain.use_cases.base import Usecase
@@ -16,7 +17,14 @@ class CreateTaskUsecase(Usecase):
 
     def execute(self, task_dto: TaskDTO) -> int:
         self._ensure_provided_entities_exist(task_dto)
-        task_entity = task_dto.to_entity()
+        task_entity = TaskEntity(
+            title=task_dto.title,
+            reporter_id=task_dto.reporter_id,
+            assignee_id=task_dto.assignee_id,
+            related_task_ids=task_dto.related_task_ids,
+            description=task_dto.description,
+            comments=task_dto.comments,
+        )
         return self._task_repo.set(task_entity)
 
     def _ensure_provided_entities_exist(self, task_dto: TaskDTO) -> None:

@@ -1,24 +1,9 @@
 from datetime import datetime
 
-from tasks.domain.comments.dto import CommentDTO
 from tasks.domain.comments.comment import CommentEntity
-from tasks.domain.tasks.dto import TaskDTO
+from tasks.domain.comments.dto import CommentDTO
 from tasks.domain.tasks.comment import TaskEntity
-
-
-def test__cast_entity_to_dto_then_cast_dto_to_entity_equals_original_entity() -> None:
-    original_task_entity = TaskEntity(
-        title="Sample Task",
-        reporter_id=123,
-        description="This is a sample task.",
-        assignee_id=123,
-        related_task_ids=[123, 456],
-        task_id=123,
-    )
-
-    task_dto = TaskDTO.from_entity(original_task_entity)
-
-    _assert_tasks_equal_without_id(task_dto.to_entity(), original_task_entity)
+from tasks.domain.tasks.dto import TaskDTO
 
 
 def _assert_tasks_equal_without_id(task1: TaskEntity, task2: TaskEntity) -> None:
