@@ -1,6 +1,8 @@
 import structlog
 from pydantic import ValidationError
 from rest_framework import status
+from rest_framework.decorators import parser_classes
+from rest_framework.parsers import JSONParser
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_500_INTERNAL_SERVER_ERROR, HTTP_201_CREATED
@@ -122,11 +124,12 @@ class TaskView(APIView):
             title=request.data['title'],
             reporter_id=request.data['reporter_id'],
             description=request.data.get('description', ''),
-            related_task_ids=request.data.getlist('related_task_ids'),
+            related_task_ids=request.data.get('related_task_ids'),
             assignee_id=request.data.get('assignee_id'),
         )
 
 
+@parser_classes([JSONParser])
 class CommentView(APIView):
     create_comment_usecase: CreateCommentUsecase = None
     get_comment_usecase: GetCommentUsecase = None

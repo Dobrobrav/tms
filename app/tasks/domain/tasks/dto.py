@@ -10,12 +10,12 @@ class TaskDTO(BaseModel):
     title: str
     reporter_id: int
     description: str = ''
-    comments: list[CommentDTO] = []
-    related_task_ids: list[int] = []
+    comments: list[CommentDTO] | None = None
+    related_task_ids: list[int] | None
     assignee_id: int | None = None
     task_id: int | None = None
 
-    def to_entity(self) -> TaskEntity:
+    def to_entity(self) -> TaskEntity: # TODO: remove
         return TaskEntity(
             title=self.title,
             reporter_id=self.reporter_id,
