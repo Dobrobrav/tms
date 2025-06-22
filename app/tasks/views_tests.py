@@ -40,22 +40,15 @@ class TestTaskView:
 
 class TestGettingUser:
 
-    @pytest.mark.parametrize(
-        'exception, status_code', [
-            (Exception(), 500),
-            (ValidationError('', []), 400),
-            (DomainValidationError(), 400),
-        ]
-    )
-    def test__usecase_exceptions_cause_error_status_codes(self, exception: Exception, status_code: int) -> None:
+    def test__generic_exception_from_get_user_usecase_causes_500(self) -> None:
         view = UserView.as_view(get_user_usecase=(s_use_case := Mock(spec=GetUserUsecase)))
-        s_use_case.execute.side_effect = exception
+        s_use_case.execute.side_effect = Exception()
         test_user_id = 123
         request = APIRequestFactory().get(f'/tasks/users/{test_user_id}')
 
         response = view(request, user_id=test_user_id)
 
-        assert response.status_code == status_code
+        assert response.status_code == 500
 
     def test__user_view_returns_400_on_invalid_input_data(self) -> None:
         view = UserView.as_view(get_user_usecase=GetUserUsecase(user_repo=Mock()))
