@@ -32,30 +32,7 @@ class TestUserAPI:
         assert created_user_response.data['name'] == user_data['name']
         assert created_user_response.data['id'] == created_user_id
 
-
-@pytest.mark.django_db
-def create_user(username: str) -> int:
-    response = APIClient().post(reverse('users'), {'name': username})
-    return response.data['id']
-
-
-@pytest.mark.django_db
-def create_2_tasks(reporter_id: int) -> list[int]:
-    task_data_1 = {
-        'title': 'title_1',
-        'reporter_id': reporter_id,
-    }
-    task_data_2 = {
-        'title': 'title_2',
-        'reporter_id': reporter_id,
-    }
-
-    created_task_ids = [
-        APIClient().post(path=reverse('tasks'), data=task_data_1).data['id'],
-        APIClient().post(path=reverse('tasks'), data=task_data_2).data['id'],
-    ]
-
-    return created_task_ids
+    # def test__
 
 
 @pytest.mark.django_db
@@ -115,6 +92,7 @@ class TestTaskAPI:
         assert get_task_response.data['assignee_id'] == task_data['assignee_id']
         assert get_task_response.data['id'] == created_task_id
 
+    # TODO: make these tests fail to make sure they're correct
     @pytest.mark.parametrize(
         'is_reporter_id_valid, is_assignee_id_valid, is_related_task_ids_valid',
         [
