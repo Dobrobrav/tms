@@ -3,7 +3,7 @@ from typing import Self
 from pydantic import BaseModel
 
 from tasks.domain.comments.dto import CommentDTO
-from tasks.domain.tasks.entity import TaskEntity
+from tasks.domain.tasks.comment import TaskEntity
 
 
 class TaskDTO(BaseModel):

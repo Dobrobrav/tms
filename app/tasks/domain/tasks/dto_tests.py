@@ -1,9 +1,9 @@
 from datetime import datetime
 
 from tasks.domain.comments.dto import CommentDTO
-from tasks.domain.comments.entity import CommentEntity
+from tasks.domain.comments.comment import CommentEntity
 from tasks.domain.tasks.dto import TaskDTO
-from tasks.domain.tasks.entity import TaskEntity
+from tasks.domain.tasks.comment import TaskEntity
 
 
 def test__cast_entity_to_dto_then_cast_dto_to_entity_equals_original_entity() -> None:

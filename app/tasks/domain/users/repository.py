@@ -2,7 +2,7 @@ from typing import Sequence
 from uuid import UUID
 
 from tasks.domain.base_repository import Repository
-from tasks.domain.users.entity import UserEntity
+from tasks.domain.users.user import UserEntity
 from tms_types import UserModel
 
 

@@ -2,7 +2,7 @@ from typing import Self
 
 from pydantic import BaseModel
 
-from tasks.domain.users.entity import UserEntity
+from tasks.domain.users.user import UserEntity
 
 
 class UserDTO(BaseModel):
