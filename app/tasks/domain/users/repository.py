@@ -2,19 +2,25 @@ from typing import Sequence
 from uuid import UUID
 
 from tasks.domain.base_repository import Repository
-from tasks.domain.users.entity import User
+from tasks.domain.exceptions import UserNotExists
+from tasks.domain.users.user import UserEntity
+from tasks.domain.users.value_objects import UserName
 from tms_types import UserModel
 
 
 class UserRepository(Repository):
-    def get(self, entity_id: int) -> User:
-        user = UserModel.objects.get(pk=entity_id)
-        return User(name=user.username, user_id=user.pk)
+    def get(self, entity_id: int) -> UserEntity:
+        try:
+            user = UserModel.objects.get(pk=entity_id)
+        except UserModel.DoesNotExist:
+            raise UserNotExists(entity_id)
+        return UserEntity(name=UserName(value=user.username), user_id=user.pk)
 
-    def set(self, entity: User) -> int:
+    def set(self, entity: UserEntity) -> int:
         user_already_exists = entity.user_id
         if user_already_exists:
-            # NOTE (SemenK): not tested
+            raise NotImplementedError('this area is not covered with tests')
+
             UserModel.objects.filter(pk=entity.user_id).update(username=entity.name)
             return entity.user_id
         else:

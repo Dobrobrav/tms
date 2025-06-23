@@ -9,7 +9,7 @@ class GetUserUsecase(Usecase):
 
     def execute(self, user_id: int) -> UserDTO:
         user = self._user_repo.get(user_id)
-        return UserDTO.from_user(user)
+        return UserDTO.from_entity(user)
 
 
 def get_user_usecase_factory() -> GetUserUsecase:

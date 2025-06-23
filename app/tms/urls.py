@@ -19,9 +19,9 @@ from django.urls import path, include
 
 import tasks.urls
 
-# TODO: add versioning
+API_VERSION = 'v1'
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('tasks/', include(tasks.urls))
+    path(f'{API_VERSION}/admin/', admin.site.urls),
+    path(f'{API_VERSION}/tasks/', include(tasks.urls)),
 ]

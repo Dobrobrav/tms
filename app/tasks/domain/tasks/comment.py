@@ -1,8 +1,11 @@
+import datetime
 from typing import Iterable
 
 import icontract
 
 from tasks.domain.aggregate_root import AggregateRoot
+from tasks.domain.comments.comment import CommentEntity
+from tasks.domain.exceptions import DomainValidationError
 
 
 class TaskEntity(AggregateRoot):
@@ -10,8 +13,9 @@ class TaskEntity(AggregateRoot):
             self,
             title: str,
             reporter_id: int,
+            related_task_ids: Iterable[int],
+            comments: Iterable[CommentEntity],
             description: str = '',
-            related_task_ids: Iterable[int] = None,
             assignee_id: int | None = None,
             task_id: int | None = None,
     ) -> None:
@@ -19,22 +23,19 @@ class TaskEntity(AggregateRoot):
         self.description = description
         self.reporter_id = reporter_id
         self.assignee_id = assignee_id
-        self._comment_ids: list[int] = []
-        self._related_task_ids: list[int] = list(related_task_ids) or []
+        self._comments = list(comments)
+        self._related_task_ids = list(related_task_ids)
         self._task_id = task_id
-
-    def get_comment_ids(self) -> list[int]:
-        return self._comment_ids.copy()
-
-    def get_related_task_ids(self) -> list[int]:
-        return self._related_task_ids.copy()
 
     @property
     def title(self) -> str:
         return self._title
 
     @title.setter
-    @icontract.require(lambda self, value: len(value) > 0, 'title must not be empty')
+    @icontract.require(
+        lambda self, value: len(value) > 0, 'title must not be empty',
+        error=DomainValidationError,
+    )
     def title(self, value: str) -> None:
         self._title = value
 
@@ -47,5 +48,14 @@ class TaskEntity(AggregateRoot):
         return self._related_task_ids.copy()
 
     @property
-    def comment_ids(self) -> list[int]:
-        return self._comment_ids.copy()
+    def comments(self) -> list[CommentEntity]:
+        return self._comments.copy()
+
+    def create_comment(self, user_id: int, text: str, create_time: datetime.datetime) -> CommentEntity:
+        comment_entity = CommentEntity(
+            user_id=user_id,
+            content=text,
+            create_time=create_time,
+        )
+        self._comments.append(comment_entity)
+        return comment_entity
