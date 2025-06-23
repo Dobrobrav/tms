@@ -13,18 +13,18 @@ class TaskEntity(AggregateRoot):
             self,
             title: str,
             reporter_id: int,
+            related_task_ids: Iterable[int],
+            comments: Iterable[CommentEntity],
             description: str = '',
-            related_task_ids: Iterable[int] = None,
             assignee_id: int | None = None,
-            comments: Iterable[CommentEntity] = None,
             task_id: int | None = None,
     ) -> None:
         self.title = title
         self.description = description
         self.reporter_id = reporter_id
         self.assignee_id = assignee_id
-        self._comments: list[CommentEntity] = comments or []  # TODO: write test to fix
-        self._related_task_ids: list[int] = list(related_task_ids or []) or []
+        self._comments = list(comments)
+        self._related_task_ids = list(related_task_ids)
         self._task_id = task_id
 
     @property
@@ -51,7 +51,6 @@ class TaskEntity(AggregateRoot):
     def comments(self) -> list[CommentEntity]:
         return self._comments.copy()
 
-    # TODO: remove dto. take args instead
     def create_comment(self, user_id: int, text: str, create_time: datetime.datetime) -> CommentEntity:
         comment_entity = CommentEntity(
             user_id=user_id,

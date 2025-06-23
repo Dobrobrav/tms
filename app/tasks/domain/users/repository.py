@@ -4,6 +4,7 @@ from uuid import UUID
 from tasks.domain.base_repository import Repository
 from tasks.domain.exceptions import UserNotExists
 from tasks.domain.users.user import UserEntity
+from tasks.domain.users.value_objects import UserName
 from tms_types import UserModel
 
 
@@ -13,7 +14,7 @@ class UserRepository(Repository):
             user = UserModel.objects.get(pk=entity_id)
         except UserModel.DoesNotExist:
             raise UserNotExists(entity_id)
-        return UserEntity(name=user.username, user_id=user.pk)
+        return UserEntity(name=UserName(value=user.username), user_id=user.pk)
 
     def set(self, entity: UserEntity) -> int:
         user_already_exists = entity.user_id

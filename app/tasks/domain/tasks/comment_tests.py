@@ -9,5 +9,7 @@ def test__cant_create_task_with_empty_title() -> None:
         TaskEntity(
             title='',
             reporter_id=123,
-            description="This is a sample task."
+            description="This is a sample task.",
+            comments=[],
+            related_task_ids=[],
         )

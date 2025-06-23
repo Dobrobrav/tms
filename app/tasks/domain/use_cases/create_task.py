@@ -21,9 +21,9 @@ class CreateTaskUsecase(Usecase):
             title=task_dto.title,
             reporter_id=task_dto.reporter_id,
             assignee_id=task_dto.assignee_id,
-            related_task_ids=task_dto.related_task_ids,
+            related_task_ids=task_dto.related_task_ids or [],
             description=task_dto.description,
-            comments=task_dto.comments,
+            comments=task_dto.comments or [],
         )
         return self._task_repo.set(task_entity)
 
