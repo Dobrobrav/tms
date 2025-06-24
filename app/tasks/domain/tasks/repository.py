@@ -3,7 +3,7 @@ from typing import Sequence
 from tasks.domain.base_repository import Repository
 from tasks.domain.comments.comment import CommentEntity
 from tasks.domain.exceptions import InvalidTaskID, CommentNotExists
-from tasks.domain.tasks.comment import TaskEntity
+from tasks.domain.tasks.task import TaskEntity
 from tasks.models import TaskModel, CommentModel
 
 

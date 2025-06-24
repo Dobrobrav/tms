@@ -2,7 +2,7 @@ from datetime import datetime
 
 from tasks.domain.comments.comment import CommentEntity
 from tasks.domain.comments.dto import CommentDTO
-from tasks.domain.tasks.comment import TaskEntity
+from tasks.domain.tasks.task import TaskEntity
 from tasks.domain.tasks.dto import TaskDTO
 
 
