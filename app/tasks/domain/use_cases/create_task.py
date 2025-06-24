@@ -1,7 +1,7 @@
 from tasks.domain.exceptions import InvalidReporterID, InvalidAssigneeID, InvalidRelatedTaskIDs
-from tasks.domain.tasks.comment import TaskEntity
 from tasks.domain.tasks.dto import TaskDTO
 from tasks.domain.tasks.repository import TaskRepository
+from tasks.domain.tasks.task import TaskEntity
 from tasks.domain.use_cases.base import Usecase
 from tasks.domain.users.repository import UserRepository
 

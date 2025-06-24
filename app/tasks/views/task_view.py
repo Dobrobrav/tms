@@ -24,7 +24,7 @@ class TaskView(APIView):
     get_task_usecase: GetTaskUsecase = None
 
     def get(self, request: Request, task_id: int) -> Response:
-        # TODO: add error handling (first write tests)
+        # TODO: add error handling (first write tests). Should I remove this todo?
         try:
             task_dto = self.get_task_usecase.execute(task_id)
         except InvalidTaskID as e:
@@ -34,7 +34,7 @@ class TaskView(APIView):
 
         return self._form_get_response(task_dto, task_id)
 
-    def _form_get_response(self, task_dto, task_id):
+    def _form_get_response(self, task_dto: TaskDTO, task_id: int) -> Response:
         return Response(
             data={
                 'id': task_id,
@@ -69,15 +69,15 @@ class TaskView(APIView):
             return Response('title must not be empty', status=status.HTTP_400_BAD_REQUEST)
         except Exception:
             return Response(f'unknown error', status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        else:
-            return Response({'id': task_id}, status=status.HTTP_201_CREATED)
+
+        return Response({'id': task_id}, status=status.HTTP_201_CREATED)
 
     @log_error
-    def _extract_data(self, request) -> TaskDTO:
+    def _extract_data(self, request: Request) -> TaskDTO:
         return TaskDTO(
             title=request.data['title'],
             reporter_id=request.data['reporter_id'],
-            description=request.data.get('description', ''),
+            description=request.data.get('description') or '',
             related_task_ids=request.data.get('related_task_ids'),
             assignee_id=request.data.get('assignee_id'),
         )
