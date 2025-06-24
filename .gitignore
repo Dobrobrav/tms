@@ -1,5 +1,6 @@
 env/.env.local
 env/.env
+.run
 .idea
 docker/docker-compose.override.yaml
 app/db.sqlite3
