@@ -1,17 +1,20 @@
 import datetime
 from typing import Iterable
 
-import icontract
+from pydantic import BaseModel, Field
 
 from tasks.domain.aggregate_root import AggregateRoot
 from tasks.domain.comments.comment import CommentEntity
-from tasks.domain.exceptions import DomainValidationError
+
+
+class TaskTitle(BaseModel):
+    value: str = Field(min_length=1)
 
 
 class TaskEntity(AggregateRoot):
     def __init__(
             self,
-            title: str,
+            title: TaskTitle,
             reporter_id: int,
             related_task_ids: Iterable[int],
             comments: Iterable[CommentEntity],
@@ -19,7 +22,7 @@ class TaskEntity(AggregateRoot):
             assignee_id: int | None = None,
             task_id: int | None = None,
     ) -> None:
-        self.title = title
+        self._title = title
         self.description = description
         self.reporter_id = reporter_id
         self.assignee_id = assignee_id
@@ -29,15 +32,7 @@ class TaskEntity(AggregateRoot):
 
     @property
     def title(self) -> str:
-        return self._title
-
-    @title.setter
-    @icontract.require(
-        lambda self, value: len(value) > 0, 'title must not be empty',
-        error=DomainValidationError,
-    )
-    def title(self, value: str) -> None:
-        self._title = value
+        return self._title.value
 
     @property
     def task_id(self) -> int:

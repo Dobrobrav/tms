@@ -3,7 +3,7 @@ from typing import Sequence
 from tasks.domain.base_repository import Repository
 from tasks.domain.comments.comment import CommentEntity
 from tasks.domain.exceptions import InvalidTaskID, CommentNotExists
-from tasks.domain.tasks.task import TaskEntity
+from tasks.domain.tasks.task import TaskEntity, TaskTitle
 from tasks.models import TaskModel, CommentModel
 
 
@@ -15,7 +15,7 @@ class TaskRepository(Repository):
         except TaskModel.DoesNotExist:
             raise InvalidTaskID(task_id=entity_id)
         return TaskEntity(
-            title=task_orm.title,
+            title=TaskTitle(value=task_orm.title),
             reporter_id=task_orm.reporter_id,
             description=task_orm.description,
             related_task_ids=[related_task.pk for related_task in task_orm.related_tasks.all()],
