@@ -39,18 +39,20 @@ class CommentView(APIView):
 
     def get(self, request: Request, comment_id: str) -> Response:
         try:
-            comment_dto = self.get_comment_usecase.execute(CommentDTO(comment_id=comment_id).comment_id)
+            comment_id = CommentDTO(comment_id=comment_id).comment_id
+            comment_dto, task_id = self.get_comment_usecase.execute(comment_id)
         except ValidationError as e:
             return Response({'validation error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
         except CommentNotExists as e:
             return Response({'error': str(e)}, status.HTTP_404_NOT_FOUND)
         except Exception:
             return Response({'error': 'unknown error'}, status=HTTP_500_INTERNAL_SERVER_ERROR)
-        else:
-            return Response(
-                data={
-                    'user_id': comment_dto.user_id, 'text': comment_dto.text,
-                    'create_time': comment_dto.create_time_str,
-                },
-                status=HTTP_200_OK,
-            )
+
+        return Response(
+            data={
+                'user_id': comment_dto.user_id, 'text': comment_dto.text,
+                'create_time': comment_dto.create_time_str,
+                'task_id': task_id,
+            },
+            status=HTTP_200_OK,
+        )
