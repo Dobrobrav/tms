@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
 import pytest
-from pydantic import ValidationError
+from pydantic import ValidationError, HttpUrl
 
 from tasks.domain.comments.comment import CommentEntity, CommentContent
 from tasks.domain.tasks.task import TaskEntity, TaskTitle
@@ -26,6 +26,10 @@ def test__create_task() -> None:
     test_assignee_id = 333
     test_task_id = 15
     test_related_task_ids = [11, 22, 33]
+    test_attachment_urls = [
+        HttpUrl('https://some.domain/attachment-endpoint/id_1'),
+        HttpUrl('https://some.domain/attachment-endpoint/id_2'),
+    ]
 
     task = TaskEntity(
         title=TaskTitle(value=test_title),
@@ -35,6 +39,7 @@ def test__create_task() -> None:
         assignee_id=test_assignee_id,
         task_id=test_task_id,
         related_task_ids=test_related_task_ids,
+        attachment_urls=test_attachment_urls,
     )
 
     assert task.comments == test_comments
@@ -43,6 +48,7 @@ def test__create_task() -> None:
     assert task.description == test_description
     assert task.reporter_id == test_reporter_id
     assert task.assignee_id == test_assignee_id
+    assert task.attachment_urls == test_attachment_urls
 
 
 def test__task_creates_comment() -> None:
@@ -51,6 +57,7 @@ def test__task_creates_comment() -> None:
         reporter_id=123,
         description="This is a sample task.",
         comments=[],
+        attachment_urls=[],
         related_task_ids=[],
     )
     test_commenter_id = 228
@@ -69,3 +76,5 @@ def test__task_creates_comment() -> None:
     assert comment.create_time == test_create_time
     assert comment.commenter_id == test_commenter_id
     assert comment.content == test_comment_text
+
+# TODO: it's possible to write a factory for empty tasks

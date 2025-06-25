@@ -24,6 +24,7 @@ class CreateTaskUsecase(Usecase):
             related_task_ids=task_dto.related_task_ids or [],
             description=task_dto.description,
             comments=task_dto.comments or [],
+            attachment_urls=task_dto.attachment_urls or [],
         )
         return self._task_repo.set(task_entity)
 

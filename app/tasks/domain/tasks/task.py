@@ -1,7 +1,7 @@
 import datetime
 from typing import Iterable
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, HttpUrl
 
 from tasks.domain.aggregate_root import AggregateRoot
 from tasks.domain.comments.comment import CommentEntity, CommentContent
@@ -18,6 +18,7 @@ class TaskEntity(AggregateRoot):
             reporter_id: int,
             related_task_ids: Iterable[int],
             comments: Iterable[CommentEntity],
+            attachment_urls: Iterable[HttpUrl],
             description: str = '',
             assignee_id: int | None = None,
             task_id: int | None = None,
@@ -27,6 +28,7 @@ class TaskEntity(AggregateRoot):
         self.reporter_id = reporter_id
         self.assignee_id = assignee_id
         self._comments = list(comments)
+        self._attachment_urls = list(attachment_urls)
         self._related_task_ids = list(related_task_ids)
         self._task_id = task_id
 
@@ -54,3 +56,7 @@ class TaskEntity(AggregateRoot):
     @property
     def comments(self) -> list[CommentEntity]:
         return self._comments.copy()
+
+    @property
+    def attachment_urls(self) -> list[HttpUrl]:
+        return self._attachment_urls.copy()

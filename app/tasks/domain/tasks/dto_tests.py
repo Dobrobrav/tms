@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from pydantic import HttpUrl
+
 from tasks.domain.comments.comment import CommentEntity, CommentContent
 from tasks.domain.comments.dto import CommentDTO
 from tasks.domain.tasks.dto import TaskDTO
@@ -32,6 +34,10 @@ def test__dto_casted_from_entity_has_correct_data() -> None:
             ),
         ],
         related_task_ids=(test_related_task_ids := [123, 456]),
+        attachment_urls=[
+            HttpUrl('https://some.domain/attachment-endpoint/id_1'),
+            HttpUrl('https://some.domain/attachment-endpoint/id_2'),
+        ],
         task_id=(test_task_id := 123),
     )
 

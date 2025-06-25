@@ -1,5 +1,7 @@
 from typing import Sequence
 
+from pydantic import HttpUrl
+
 from tasks.domain.base_repository import Repository
 from tasks.domain.comments.comment import CommentEntity, CommentContent
 from tasks.domain.exceptions import InvalidTaskID, CommentNotExists
@@ -27,6 +29,10 @@ class TaskRepository(Repository):
                     user_id=c.commenter_id,
                 )
                 for c in task_orm.comments.all()
+            ],
+            attachment_urls=[
+                HttpUrl('https://some.domain/attachment-endpoint/id_1'),
+                HttpUrl('https://some.domain/attachment-endpoint/id_2'),
             ],
             assignee_id=task_orm.assignee_id,
             task_id=task_orm.pk,

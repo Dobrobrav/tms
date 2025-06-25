@@ -1,6 +1,6 @@
 from typing import Self
 
-from pydantic import BaseModel
+from pydantic import BaseModel, HttpUrl
 
 from tasks.domain.comments.dto import CommentDTO
 from tasks.domain.tasks.task import TaskEntity
@@ -11,6 +11,7 @@ class TaskDTO(BaseModel):
     reporter_id: int
     description: str = ''
     comments: list[CommentDTO] | None = None
+    attachment_urls: list[HttpUrl] | None = None
     related_task_ids: list[int] | None
     assignee_id: int | None = None
     task_id: int | None = None
