@@ -35,7 +35,7 @@ class UserView(APIView):
         except (DomainValidationError, ValidationError) as e:
             return Response({'validation error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
-            return Response(f'unknown error', status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({'error': 'unknown error'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         else:
             return Response({'id': user_id}, status=status.HTTP_201_CREATED)
 

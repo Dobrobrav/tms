@@ -27,6 +27,7 @@ class CreateTaskUsecase(Usecase):
         )
         return self._task_repo.set(task_entity)
 
+    # TODO: write tests for exceptions (status codes actually)
     def _ensure_provided_entities_exist(self, task_dto: TaskDTO) -> None:
         if not self._user_repo.exists(id_or_ids=task_dto.reporter_id):
             raise InvalidReporterID(task_dto.reporter_id)
