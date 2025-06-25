@@ -1,13 +1,13 @@
 from datetime import datetime
 
+from tasks.domain.comments.comment import CommentEntity, CommentContent
 from tasks.domain.comments.dto import CommentDTO
-from tasks.domain.comments.comment import CommentEntity
 
 
 def test__dto_casted_from_comment_entity_has_correct_data() -> None:
     comment_entity = CommentEntity(
         user_id=444,
-        content='foobar',
+        content=CommentContent(value='foobar'),
         comment_id=15,
         create_time=datetime(2025, 6, 16)
     )

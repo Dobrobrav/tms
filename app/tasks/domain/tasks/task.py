@@ -4,7 +4,7 @@ from typing import Iterable
 from pydantic import BaseModel, Field
 
 from tasks.domain.aggregate_root import AggregateRoot
-from tasks.domain.comments.comment import CommentEntity
+from tasks.domain.comments.comment import CommentEntity, CommentContent
 
 
 class TaskTitle(BaseModel):
@@ -30,6 +30,15 @@ class TaskEntity(AggregateRoot):
         self._related_task_ids = list(related_task_ids)
         self._task_id = task_id
 
+    def create_comment(self, user_id: int, text: str, create_time: datetime.datetime) -> CommentEntity:
+        comment_entity = CommentEntity(
+            user_id=user_id,
+            content=CommentContent(value=text),
+            create_time=create_time,
+        )
+        self._comments.append(comment_entity)
+        return comment_entity
+
     @property
     def title(self) -> str:
         return self._title.value
@@ -45,12 +54,3 @@ class TaskEntity(AggregateRoot):
     @property
     def comments(self) -> list[CommentEntity]:
         return self._comments.copy()
-
-    def create_comment(self, user_id: int, text: str, create_time: datetime.datetime) -> CommentEntity:
-        comment_entity = CommentEntity(
-            user_id=user_id,
-            content=text,
-            create_time=create_time,
-        )
-        self._comments.append(comment_entity)
-        return comment_entity

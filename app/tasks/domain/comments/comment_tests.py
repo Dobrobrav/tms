@@ -1,15 +1,9 @@
-from datetime import datetime
-
 import pytest
+from pydantic import ValidationError
 
-from tasks.domain.comments.comment import CommentEntity
-from tasks.domain.exceptions import DomainValidationError
+from tasks.domain.comments.comment import CommentContent
 
 
-def test__cant_create_comment_with_empty_content() -> None:
-    with pytest.raises(DomainValidationError):
-        CommentEntity(
-            user_id=777,
-            content='',
-            create_time=datetime(2025, 6, 16)
-        )
+def test__comment_content_cant_be_empty() -> None:
+    with pytest.raises(ValidationError):
+        CommentContent(value='')

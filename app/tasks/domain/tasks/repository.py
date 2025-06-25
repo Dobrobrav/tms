@@ -1,7 +1,7 @@
 from typing import Sequence
 
 from tasks.domain.base_repository import Repository
-from tasks.domain.comments.comment import CommentEntity
+from tasks.domain.comments.comment import CommentEntity, CommentContent
 from tasks.domain.exceptions import InvalidTaskID, CommentNotExists
 from tasks.domain.tasks.task import TaskEntity, TaskTitle
 from tasks.models import TaskModel, CommentModel
@@ -21,7 +21,7 @@ class TaskRepository(Repository):
             related_task_ids=[related_task.pk for related_task in task_orm.related_tasks.all()],
             comments=[
                 CommentEntity(
-                    content=c.text,
+                    content=CommentContent(value=c.text),
                     create_time=c.create_time,
                     comment_id=c.pk,
                     user_id=c.commenter_id,
@@ -82,7 +82,7 @@ class TaskRepository(Repository):
             CommentEntity(
                 user_id=comment_orm.commenter_id,
                 comment_id=comment_orm.pk,
-                content=comment_orm.text,
+                content=CommentContent(value=comment_orm.text),
                 create_time=comment_orm.create_time
             ),
             comment_orm.task_id,
