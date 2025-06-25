@@ -225,6 +225,7 @@ class TestCommentAPI:
         assert comment_response.status_code == 200
         assert comment_response.data['user_id'] == test_user_id
         assert comment_response.data['text'] == test_text
+        assert comment_response.data['task_id'] == test_task_id
         self._assert_create_time_roughly_equals_now(comment_response.data['create_time'])
 
     def test__when_comment_is_created_then_it_can_be_seen_in_task(self, api_client: APIClient) -> None:
