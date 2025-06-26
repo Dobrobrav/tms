@@ -1,10 +1,22 @@
 from datetime import datetime, timedelta
+from typing import Sequence
 
 import pytest
 from pydantic import ValidationError, HttpUrl
 
 from tasks.domain.comments.comment import CommentEntity, CommentContent
 from tasks.domain.tasks.task import TaskEntity, TaskTitle
+
+
+@pytest.fixture
+def minimal_task() -> TaskEntity:
+    return TaskEntity(
+        title=TaskTitle(value='task title'),
+        reporter_id=123,
+        related_task_ids=[],
+        comments=[],
+        attachment_urls=[],
+    )
 
 
 def test__task_title_cant_be_empty() -> None:
@@ -42,7 +54,7 @@ def test__create_task() -> None:
         attachment_urls=test_attachment_urls,
     )
 
-    assert task.comments == test_comments
+    assert _comments_are_the_same(task.comments, test_comments)
     assert task.title == test_title
     assert task.task_id == test_task_id
     assert task.description == test_description
@@ -51,30 +63,44 @@ def test__create_task() -> None:
     assert task.attachment_urls == test_attachment_urls
 
 
-def test__task_creates_comment() -> None:
-    task = TaskEntity(
-        title=TaskTitle(value='task title'),
-        reporter_id=123,
-        description="This is a sample task.",
-        comments=[],
-        attachment_urls=[],
-        related_task_ids=[],
-    )
+def test__task_creates_comment(minimal_task: TaskEntity) -> None:
     test_commenter_id = 228
     test_comment_text = 'test_comment'
     test_create_time = datetime.now()
 
-    task.create_comment(
+    minimal_task.create_comment(
         user_id=test_commenter_id,
         text=test_comment_text,
         create_time=test_create_time
     )
 
-    assert len(task.comments) == 1
-    comment = task.comments[0]
+    assert len(minimal_task.comments) == 1
+    comment = minimal_task.comments[0]
     assert comment.comment_id is None
     assert comment.create_time == test_create_time
     assert comment.commenter_id == test_commenter_id
     assert comment.content == test_comment_text
 
-# TODO: it's possible to write a factory for empty tasks
+
+def test__add_attachment_url_to_task(minimal_task: TaskEntity) -> None:
+    test_attachment_url = HttpUrl('https://some.domain/attachment-endpoint/id_1')
+
+    minimal_task.add_attachment_url(test_attachment_url)
+
+    assert minimal_task.attachment_urls == [test_attachment_url]
+
+
+def _comments_are_the_same(comments_1: Sequence[CommentEntity], comments_2: Sequence[CommentEntity]) -> bool:
+    if len(comments_1) != len(comments_2):
+        return False
+
+    for c1, c2 in zip(comments_1, comments_2):
+        if (
+                c1.content != c2.content
+                or c1.commenter_id != c2.commenter_id
+                or c1.create_time != c2.create_time
+                or c1.comment_id != c2.comment_id
+        ):
+            return False
+
+    return True

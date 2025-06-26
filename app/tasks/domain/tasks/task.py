@@ -1,4 +1,5 @@
 import datetime
+from copy import deepcopy
 from typing import Iterable
 
 from pydantic import BaseModel, Field, HttpUrl
@@ -41,6 +42,9 @@ class TaskEntity(AggregateRoot):
         self._comments.append(comment_entity)
         return comment_entity
 
+    def add_attachment_url(self, url: HttpUrl) -> None:
+        self._attachment_urls.append(url)
+
     @property
     def title(self) -> str:
         return self._title.value
@@ -55,7 +59,7 @@ class TaskEntity(AggregateRoot):
 
     @property
     def comments(self) -> list[CommentEntity]:
-        return self._comments.copy()
+        return deepcopy(self._comments)
 
     @property
     def attachment_urls(self) -> list[HttpUrl]:

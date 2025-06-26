@@ -8,15 +8,6 @@ from tasks.domain.tasks.dto import TaskDTO
 from tasks.domain.tasks.task import TaskEntity, TaskTitle
 
 
-def _assert_tasks_equal_without_id(task1: TaskEntity, task2: TaskEntity) -> None:
-    assert task1.title == task2.title, f"Title mismatch: {task1.title} != {task2.title}"
-    assert task1.reporter_id == task2.reporter_id, f"Reporter mismatch: {task1.reporter_id} != {task2.reporter_id}"
-    assert task1.description == task2.description, f"Description mismatch: {task1.description} != {task2.description}"
-    assert task1.assignee_id == task2.assignee_id, f"Assignee mismatch: {task1.assignee_id} != {task2.assignee_id}"
-    assert task1.comments == task2.comments, f"Comment IDs mismatch: {task1.comments} != {task2.comments}"
-    assert task1.related_task_ids == task2.related_task_ids, f"Related Task IDs mismatch: {task1.related_task_ids} != {task2.related_task_ids}"
-
-
 def test__dto_casted_from_entity_has_correct_data() -> None:
     task_entity = TaskEntity(
         title=TaskTitle(value=(test_title := "Sample Task")),
