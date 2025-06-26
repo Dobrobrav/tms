@@ -29,7 +29,7 @@ urlpatterns = [
         view=views.TaskView.as_view(get_task_usecase=get_task_usecase_factory()),
         name='task',
     ),
-    path(
+    path( # TODO: should be 'tasks/{task_id}/comments/' for creating. But 'comments/{comment_id}' is fine for getting
         route='comments/',
         view=views.CommentView.as_view(create_comment_usecase=create_comment_usecase_factory()),
         name='comments',
