@@ -1,9 +1,9 @@
-from tasks.domain.exceptions import InvalidReporterID, InvalidAssigneeID, InvalidRelatedTaskIDs
 from tasks.domain.tasks.dto import TaskDTO
 from tasks.domain.tasks.repository import TaskRepository
 from tasks.domain.tasks.task import TaskEntity, TaskTitle
-from tasks.domain.use_cases.base import Usecase
 from tasks.domain.users.repository import UserRepository
+from tasks.exceptions import InvalidReporterID, InvalidAssigneeID, InvalidRelatedTaskIDs
+from tasks.use_cases.base import Usecase
 
 
 class CreateTaskUsecase(Usecase):
@@ -24,7 +24,7 @@ class CreateTaskUsecase(Usecase):
             related_task_ids=task_dto.related_task_ids or [],
             description=task_dto.description,
             comments=task_dto.comments or [],
-            attachment_urls=task_dto.attachment_urls or [],
+            attachment_ids=task_dto.attachment_ids or [],
         )
         return self._task_repo.set(task_entity)
 

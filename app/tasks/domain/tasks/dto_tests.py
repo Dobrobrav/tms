@@ -1,7 +1,5 @@
 from datetime import datetime
 
-from pydantic import HttpUrl
-
 from tasks.domain.comments.comment import CommentEntity, CommentContent
 from tasks.domain.comments.dto import CommentDTO
 from tasks.domain.tasks.dto import TaskDTO
@@ -25,10 +23,7 @@ def test__dto_casted_from_entity_has_correct_data() -> None:
             ),
         ],
         related_task_ids=(test_related_task_ids := [123, 456]),
-        attachment_urls=[
-            HttpUrl('https://some.domain/attachment-endpoint/id_1'),
-            HttpUrl('https://some.domain/attachment-endpoint/id_2'),
-        ],
+        attachment_ids=(test_attachment_ids := [998, 999]),
         task_id=(test_task_id := 123),
     )
 
@@ -40,6 +35,7 @@ def test__dto_casted_from_entity_has_correct_data() -> None:
         CommentDTO.from_entity(test_comment_entity_2),
     ]
     assert task_dto.related_task_ids == test_related_task_ids
+    assert task_dto.attachment_ids == test_attachment_ids
     assert task_dto.assignee_id == test_assignee_id
     assert task_dto.description == test_description
     assert task_dto.title == test_title

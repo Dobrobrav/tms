@@ -57,14 +57,14 @@ class TestTaskAPI:
 
     def test__when_task_is_created_api_returns_task_id(self, api_client: APIClient) -> None:
         test_title = 'test title'
-        test_reporter_id = self._create_user(api_client, username='foo')
+        test_reporter_id = _create_user(api_client, username='foo')
         test_description = 'test description'
-        test_related_task_ids = create_n_tasks(
+        test_related_task_ids = _create_n_tasks(
             api_client,
-            reporter_id=self._create_user(api_client, username='baz'),
+            reporter_id=_create_user(api_client, username='baz'),
             n=2,
         )
-        test_assignee_id = self._create_user(api_client, username='bar')
+        test_assignee_id = _create_user(api_client, username='bar')
 
         task_data = {
             'title': test_title,
@@ -81,14 +81,14 @@ class TestTaskAPI:
 
     def test__when_task_is_created_then_it_can_be_retrieved(self, api_client: APIClient) -> None:
         test_title = 'test title'
-        test_reporter_id = self._create_user(api_client, username='foo')
+        test_reporter_id = _create_user(api_client, username='foo')
         test_description = 'test description'
-        test_related_task_ids = create_n_tasks(
+        test_related_task_ids = _create_n_tasks(
             api_client,
-            reporter_id=self._create_user(api_client, username='baz'),
+            reporter_id=_create_user(api_client, username='baz'),
             n=2,
         )
-        test_assignee_id = self._create_user(api_client, username='bar')
+        test_assignee_id = _create_user(api_client, username='bar')
 
         task_data = {
             'title': test_title,
@@ -125,11 +125,11 @@ class TestTaskAPI:
             is_assignee_id_valid: bool,
             is_related_task_ids_valid: bool,
     ) -> None:
-        test_reporter_id = self._create_user(api_client, username='reporter', is_valid=is_reporter_id_valid)
-        test_assignee_id = self._create_user(api_client, username='assignee', is_valid=is_assignee_id_valid)
-        test_related_task_ids = create_n_tasks(
+        test_reporter_id = _create_user(api_client, username='reporter', is_valid=is_reporter_id_valid)
+        test_assignee_id = _create_user(api_client, username='assignee', is_valid=is_assignee_id_valid)
+        test_related_task_ids = _create_n_tasks(
             api_client,
-            reporter_id=self._create_user(api_client, username='user for related tasks'),
+            reporter_id=_create_user(api_client, username='user for related tasks'),
             should_tasks_be_valid=is_related_task_ids_valid,
             n=2,
         )
@@ -147,7 +147,7 @@ class TestTaskAPI:
         assert task_response.status_code == 400
 
     def test__invalid_task_id_cause_400_when_getting_task(self, api_client: APIClient) -> None:
-        invalid_task_id = create_n_tasks(api_client, n=1, should_tasks_be_valid=False)[0]
+        invalid_task_id = _create_n_tasks(api_client, n=1, should_tasks_be_valid=False)[0]
 
         get_task_response = api_client.get(path=reverse('task', kwargs={'task_id': invalid_task_id}))
 
@@ -156,24 +156,24 @@ class TestTaskAPI:
     def test__when_creating_task__empty_title_causes_400(self, api_client: APIClient) -> None:
         task_data = {
             'title': '',
-            'reporter_id': self._create_user(api_client, username='reporter', is_valid=True),
+            'reporter_id': _create_user(api_client, username='reporter', is_valid=True),
         }
 
         create_task_response = api_client.post(reverse('tasks'), data=task_data)
 
         assert create_task_response.status_code == 400
 
-    @staticmethod
-    def _create_user(api_client: APIClient, username: str | None = None, is_valid: bool = True) -> int:
-        if not is_valid:
-            return random.randint(-100_000, -10_000)
 
-        assert username is not None
-        response = api_client.post(reverse('users'), {'name': username})
-        return response.data['id']
+def _create_user(api_client: APIClient, username: str | None = None, is_valid: bool = True) -> int:
+    if not is_valid:
+        return random.randint(-100_000, -10_000)
+
+    assert username is not None
+    response = api_client.post(reverse('users'), {'name': username})
+    return response.data['id']
 
 
-def create_n_tasks(
+def _create_n_tasks(
         api_client: APIClient,
         reporter_id: int | None = None,
         should_tasks_be_valid: bool = True,
@@ -199,9 +199,9 @@ def create_n_tasks(
 class TestCommentAPI:
 
     def test__when_comment_is_created_api_returns_comment_id(self, api_client: APIClient) -> None:
-        test_user_id = self._create_user(api_client, 'test_commenter_id')
-        test_reporter_id = self._create_user(api_client, 'test_reporter_id')
-        test_task_id = create_n_tasks(api_client, test_reporter_id, n=1)[0]
+        test_user_id = _create_user(api_client, 'test_commenter_id')
+        test_reporter_id = _create_user(api_client, 'test_reporter_id')
+        test_task_id = _create_n_tasks(api_client, test_reporter_id, n=1)[0]
         test_text = 'test text'
 
         comment_response = api_client.post(
@@ -214,9 +214,9 @@ class TestCommentAPI:
         assert str.isdigit(str(comment_response.data['id']))
 
     def test__when_comment_is_created_then_it_can_be_retrieved(self, api_client: APIClient) -> None:
-        test_user_id = self._create_user(api_client, 'test_commenter_id')
-        test_reporter_id = self._create_user(api_client, 'test_reporter_id')
-        test_task_id = create_n_tasks(api_client, test_reporter_id, n=1)[0]
+        test_user_id = _create_user(api_client, 'test_commenter_id')
+        test_reporter_id = _create_user(api_client, 'test_reporter_id')
+        test_task_id = _create_n_tasks(api_client, test_reporter_id, n=1)[0]
         test_text = 'test text'
         comment_id = self._create_comment(api_client, test_task_id, test_text, test_user_id)
 
@@ -229,9 +229,9 @@ class TestCommentAPI:
         self._assert_create_time_roughly_equals_now(comment_response.data['create_time'])
 
     def test__when_comment_is_created_then_it_can_be_seen_in_task(self, api_client: APIClient) -> None:
-        test_user_id = self._create_user(api_client, 'test_commenter_id')
-        test_reporter_id = self._create_user(api_client, 'test_reporter_id')
-        test_task_id = create_n_tasks(api_client, test_reporter_id, n=1)[0]
+        test_user_id = _create_user(api_client, 'test_commenter_id')
+        test_reporter_id = _create_user(api_client, 'test_reporter_id')
+        test_task_id = _create_n_tasks(api_client, test_reporter_id, n=1)[0]
         test_text = 'test text'
         comment_id = self._create_comment(api_client, test_task_id, test_text, test_user_id)
 
@@ -259,9 +259,6 @@ class TestCommentAPI:
         get_user_response = api_client.get(reverse('comment', kwargs={'comment_id': non_existent_id}))
 
         assert get_user_response.status_code == 404
-
-    def _create_user(self, api_client: APIClient, username: str):
-        return api_client.post(reverse('users'), {'name': username}, format='json').data['id']
 
     def _create_comment(self, api_client: APIClient, test_task_id: int, test_text: str, test_user_id: int):
         return api_client.post(

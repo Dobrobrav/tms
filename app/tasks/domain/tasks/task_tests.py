@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from typing import Sequence
 
 import pytest
-from pydantic import ValidationError, HttpUrl
+from pydantic import ValidationError
 
 from tasks.domain.comments.comment import CommentEntity, CommentContent
 from tasks.domain.tasks.task import TaskEntity, TaskTitle
@@ -15,7 +15,7 @@ def minimal_task() -> TaskEntity:
         reporter_id=123,
         related_task_ids=[],
         comments=[],
-        attachment_urls=[],
+        attachment_ids=[],
     )
 
 
@@ -38,10 +38,7 @@ def test__create_task() -> None:
     test_assignee_id = 333
     test_task_id = 15
     test_related_task_ids = [11, 22, 33]
-    test_attachment_urls = [
-        HttpUrl('https://some.domain/attachment-endpoint/id_1'),
-        HttpUrl('https://some.domain/attachment-endpoint/id_2'),
-    ]
+    test_attachment_ids = [998, 999]
 
     task = TaskEntity(
         title=TaskTitle(value=test_title),
@@ -51,7 +48,7 @@ def test__create_task() -> None:
         assignee_id=test_assignee_id,
         task_id=test_task_id,
         related_task_ids=test_related_task_ids,
-        attachment_urls=test_attachment_urls,
+        attachment_ids=test_attachment_ids,
     )
 
     assert _comments_are_the_same(task.comments, test_comments)
@@ -60,7 +57,7 @@ def test__create_task() -> None:
     assert task.description == test_description
     assert task.reporter_id == test_reporter_id
     assert task.assignee_id == test_assignee_id
-    assert task.attachment_urls == test_attachment_urls
+    assert task.attachment_ids == test_attachment_ids
 
 
 def test__task_creates_comment(minimal_task: TaskEntity) -> None:
@@ -83,11 +80,8 @@ def test__task_creates_comment(minimal_task: TaskEntity) -> None:
 
 
 def test__add_attachment_url_to_task(minimal_task: TaskEntity) -> None:
-    test_attachment_url = HttpUrl('https://some.domain/attachment-endpoint/id_1')
-
-    minimal_task.add_attachment_url(test_attachment_url)
-
-    assert minimal_task.attachment_urls == [test_attachment_url]
+    minimal_task.add_attachment_id(123)
+    assert minimal_task.attachment_ids == [123]
 
 
 def _comments_are_the_same(comments_1: Sequence[CommentEntity], comments_2: Sequence[CommentEntity]) -> bool:

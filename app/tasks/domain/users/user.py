@@ -1,4 +1,4 @@
-from tasks.domain.aggregate_root import AggregateRoot
+from tasks.domain.base_aggregate_root import AggregateRoot
 from tasks.domain.users.value_objects import UserName
 
 

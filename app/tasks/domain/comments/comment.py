@@ -3,17 +3,13 @@ import datetime
 from pydantic import BaseModel, Field
 
 
-class CommentContent(BaseModel):
-    value: str = Field(min_length=1)
-
-
 class CommentEntity:
     """ All modifications of comments must go strictly through TaskEntity class! """
 
     def __init__(
             self,
             user_id: int,
-            content: CommentContent,
+            content: 'CommentContent',
             create_time: datetime.datetime,
             comment_id: int | None = None,
     ) -> None:
@@ -37,3 +33,7 @@ class CommentEntity:
     @property
     def comment_id(self) -> int:
         return self._comment_id
+
+
+class CommentContent(BaseModel):
+    value: str = Field(min_length=1)
