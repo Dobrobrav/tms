@@ -30,6 +30,7 @@ jobs:
 
   deploy:
     name: SSH Deploy to Server
+    needs: test
     runs-on: ubuntu-latest
 
     steps:
