@@ -13,7 +13,7 @@ class S3Gateway:
             self,
             s3_client: S3Client,
             *,
-            _chunk_size: int = 5 * 1024 * 1024,  # _chunk_size must only be passed in TESTS. Use default in prod!
+            _chunk_size: int = 5 * 1024 * 1024,  # MUST ONLY BE PASSED IN TESTS. Selectel requires 5mb chunk size
     ) -> None:
         self._s3_client = s3_client
         self._chunk_size = _chunk_size
