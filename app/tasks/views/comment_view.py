@@ -8,9 +8,9 @@ from rest_framework.status import HTTP_500_INTERNAL_SERVER_ERROR, HTTP_201_CREAT
 from rest_framework.views import APIView
 
 from tasks.domain.comments.dto import CommentDTO
-from tasks.domain.exceptions import DomainValidationError, CommentNotExists
-from tasks.domain.use_cases.create_comment import CreateCommentUsecase
-from tasks.domain.use_cases.get_comment import GetCommentUsecase
+from tasks.exceptions import DomainValidationError, CommentNotExists
+from tasks.use_cases.create_comment import CreateCommentUsecase
+from tasks.use_cases.get_comment import GetCommentUsecase
 from utils import log_error
 
 

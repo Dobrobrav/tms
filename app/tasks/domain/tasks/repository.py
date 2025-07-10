@@ -1,19 +1,17 @@
 from typing import Sequence
 
-from tasks.domain.base_repository import Repository
 from tasks.domain.comments.comment import CommentEntity, CommentContent
-from tasks.domain.exceptions import InvalidTaskID, CommentNotExists
 from tasks.domain.tasks.task import TaskEntity, TaskTitle
-from tasks.models import TaskModel, CommentModel
+from tasks.exceptions import InvalidTaskID, CommentNotExists
+from tasks.models import TaskModel, CommentModel, TaskAttachmentModel
 
 
-class TaskRepository(Repository):
-    def get(self, entity_id: int) -> TaskEntity:
-        # TODO: make it prefetch all comments?
+class TaskRepository:
+    def get(self, task_id: int) -> TaskEntity:
         try:
-            task_orm = TaskModel.objects.get(pk=entity_id)
+            task_orm = TaskModel.preload_all(task_id)
         except TaskModel.DoesNotExist:
-            raise InvalidTaskID(task_id=entity_id)
+            raise InvalidTaskID(task_id=task_id)
         return TaskEntity(
             title=TaskTitle(value=task_orm.title),
             reporter_id=task_orm.reporter_id,
@@ -28,36 +26,48 @@ class TaskRepository(Repository):
                 )
                 for c in task_orm.comments.all()
             ],
+            attachment_ids=[attachment.pk for attachment in task_orm.attachments.all()],
             assignee_id=task_orm.assignee_id,
             task_id=task_orm.pk,
         )
 
     def set(self, task_entity: TaskEntity) -> int:
-        related_tasks_orm = TaskModel.objects.filter(pk__in=task_entity.related_task_ids)
-        if task_already_exists := task_entity.task_id:
-            raise NotImplementedError('this area is not covered with tests')
+        task_already_stored = task_entity.task_id is not None
+        if task_already_stored:
+            return self._update_existent_task(task_entity).pk
 
-            TaskModel.objects.filter(pk=task_entity.task_id).update(
-                title=task_entity.title,
-                reporter_id=task_entity.reporter_id,
-                description=task_entity.description,
-                assignee_id=task_entity.assignee_id,
-            )
-            task_orm = TaskModel.objects.get(pk=task_entity.task_id)
-            task_orm.related_tasks.set(related_tasks_orm)
+        return self._store_new_task(task_entity).pk
 
-            assert task_orm.pk == task_entity.task_id
+    def _update_existent_task(self, task_entity: TaskEntity) -> TaskModel:
+        # TODO: cover with tests
+        TaskModel.objects.filter(pk=task_entity.task_id).update(
+            title=task_entity.title,
+            reporter_id=task_entity.reporter_id,
+            description=task_entity.description,
+            assignee_id=task_entity.assignee_id,
+        )
 
-            return task_entity.task_id
-        else:
-            new_task = TaskModel.objects.create(
-                title=task_entity.title,
-                reporter_id=task_entity.reporter_id,
-                description=task_entity.description,
-                assignee_id=task_entity.assignee_id,
-            )
-            new_task.related_tasks.set(related_tasks_orm)
-            return new_task.pk
+        task_orm = TaskModel.objects.get(pk=task_entity.task_id)
+        task_orm.related_tasks.set(self._get_related_tasks(task_entity.related_task_ids))
+        task_orm.attachments.set(self._get_attachments(task_entity.attachment_ids))
+        return task_orm
+
+    def _get_attachments(self, ids: list[int]):
+        return TaskAttachmentModel.objects.filter(pk__in=ids)
+
+    def _get_related_tasks(self, ids: list[int]):
+        return TaskModel.objects.filter(pk__in=ids)
+
+    def _store_new_task(self, task_entity: TaskEntity) -> TaskModel:
+        task_orm = TaskModel.objects.create(
+            title=task_entity.title,
+            reporter_id=task_entity.reporter_id,
+            description=task_entity.description,
+            assignee_id=task_entity.assignee_id,
+        )
+        task_orm.related_tasks.set(self._get_related_tasks(task_entity.related_task_ids))
+        task_orm.attachments.set(self._get_attachments(task_entity.attachment_ids))
+        return task_orm
 
     def exists(self, id_or_ids: int | Sequence[int]) -> bool:
         """ Returns true if ALL provided ids exist in repo """

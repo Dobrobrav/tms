@@ -4,10 +4,10 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from tasks.domain.exceptions import DomainValidationError, UserNotExists
-from tasks.domain.use_cases.create_user import CreateUserUsecase
-from tasks.domain.use_cases.get_user import GetUserUsecase
 from tasks.domain.users.dto import UserDTO
+from tasks.exceptions import DomainValidationError, UserNotExists
+from tasks.use_cases.create_user import CreateUserUsecase
+from tasks.use_cases.get_user import GetUserUsecase
 from utils import log_error
 
 
@@ -36,11 +36,9 @@ class UserView(APIView):
             return Response({'validation error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({'error': 'unknown error'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        else:
-            return Response({'id': user_id}, status=status.HTTP_201_CREATED)
+
+        return Response({'id': user_id}, status=status.HTTP_201_CREATED)
 
     @log_error
     def _extract_data(self, request: Request) -> UserDTO:
-        return UserDTO(
-            name=request.data['name'],
-        )
+        return UserDTO(name=request.data['name'])

@@ -17,8 +17,13 @@ import environ
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 env = environ.Env(
-    SECRET_KEY=(str,),
+    SECRET_KEY=str,
     DEBUG=(bool, False),
+    SELECTEL_ENDPOINT_URL=str,
+    SELECTEL_AWS_ACCESS_KEY_ID=str,
+    SELECTEL_AWS_SECRET_ACCESS_KEY=str,
+    SELECTEL_BUCKET=str,
+    SELECTEL_CDN_URL=str,
 )
 
 # NOTE (SemenK): this allows to run tests locally without docker by loading envs here
@@ -144,3 +149,9 @@ if DEBUG:
     REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'].append(
         'rest_framework.renderers.BrowsableAPIRenderer'
     )
+
+SELECTEL_ENDPOINT_URL = env('SELECTEL_ENDPOINT_URL')
+SELECTEL_AWS_ACCESS_KEY_ID = env('SELECTEL_AWS_ACCESS_KEY_ID')
+SELECTEL_AWS_SECRET_ACCESS_KEY = env('SELECTEL_AWS_SECRET_ACCESS_KEY')
+SELECTEL_BUCKET = env('SELECTEL_BUCKET')
+SELECTEL_CDN_URL = env('SELECTEL_CDN_URL')

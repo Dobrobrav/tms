@@ -5,7 +5,8 @@ from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK
 from rest_framework.views import APIView
 
-from tasks.domain.exceptions import (
+from tasks.domain.tasks.dto import TaskDTO
+from tasks.exceptions import (
     DomainValidationError,
     InvalidTaskID,
     InvalidReporterID,
@@ -13,9 +14,8 @@ from tasks.domain.exceptions import (
     InvalidRelatedTaskIDs,
     TitleEmptyError,
 )
-from tasks.domain.tasks.dto import TaskDTO
-from tasks.domain.use_cases.create_task import CreateTaskUsecase
-from tasks.domain.use_cases.get_task import GetTaskUsecase
+from tasks.use_cases.create_task import CreateTaskUsecase
+from tasks.use_cases.get_task import GetTaskUsecase
 from utils import log_error
 
 

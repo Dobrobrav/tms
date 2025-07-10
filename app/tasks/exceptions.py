@@ -8,15 +8,18 @@ class ApplicationError(Exception):
 class TitleEmptyError(ApplicationError):
     ...
 
+
 class UserNotExists(ApplicationError):
     def __init__(self, user_id: int) -> None:
         super().__init__(f'user ID {user_id} does not exist')
         self.user_id = user_id
 
+
 class CommentNotExists(ApplicationError):
     def __init__(self, comment_id: int) -> None:
         super().__init__(f'comment ID {comment_id} does not exist')
         self.comment_id = comment_id
+
 
 class InvalidReporterID(ApplicationError):
     def __init__(self, reporter_id: int) -> None:

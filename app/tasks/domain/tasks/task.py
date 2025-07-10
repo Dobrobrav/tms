@@ -1,9 +1,10 @@
 import datetime
+from copy import deepcopy
 from typing import Iterable
 
 from pydantic import BaseModel, Field
 
-from tasks.domain.aggregate_root import AggregateRoot
+from tasks.domain.base_aggregate_root import AggregateRoot
 from tasks.domain.comments.comment import CommentEntity, CommentContent
 
 
@@ -17,7 +18,8 @@ class TaskEntity(AggregateRoot):
             title: TaskTitle,
             reporter_id: int,
             related_task_ids: Iterable[int],
-            comments: Iterable[CommentEntity],
+            comments: Iterable[CommentEntity],  # TODO: вытащить комменты в отдельный агрегат
+            attachment_ids: Iterable[int],
             description: str = '',
             assignee_id: int | None = None,
             task_id: int | None = None,
@@ -27,6 +29,7 @@ class TaskEntity(AggregateRoot):
         self.reporter_id = reporter_id
         self.assignee_id = assignee_id
         self._comments = list(comments)
+        self._attachment_ids = list(attachment_ids)
         self._related_task_ids = list(related_task_ids)
         self._task_id = task_id
 
@@ -38,6 +41,9 @@ class TaskEntity(AggregateRoot):
         )
         self._comments.append(comment_entity)
         return comment_entity
+
+    def add_attachment_id(self, attachment_id: int) -> None:
+        self._attachment_ids.append(attachment_id)
 
     @property
     def title(self) -> str:
@@ -53,4 +59,8 @@ class TaskEntity(AggregateRoot):
 
     @property
     def comments(self) -> list[CommentEntity]:
-        return self._comments.copy()
+        return deepcopy(self._comments)
+
+    @property
+    def attachment_ids(self) -> list[int]:
+        return self._attachment_ids.copy()

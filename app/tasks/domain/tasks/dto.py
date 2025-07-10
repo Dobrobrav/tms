@@ -11,6 +11,7 @@ class TaskDTO(BaseModel):
     reporter_id: int
     description: str = ''
     comments: list[CommentDTO] | None = None
+    attachment_ids: list[int] | None = None
     related_task_ids: list[int] | None
     assignee_id: int | None = None
     task_id: int | None = None
@@ -23,6 +24,7 @@ class TaskDTO(BaseModel):
             description=task.description,
             comments=[CommentDTO.from_entity(c) for c in task.comments],
             related_task_ids=task.related_task_ids,
+            attachment_ids=task.attachment_ids,
             assignee_id=task.assignee_id,
             task_id=task.task_id,
         )

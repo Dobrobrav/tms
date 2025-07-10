@@ -22,6 +22,6 @@ import tasks.urls
 API_VERSION = 'v1'
 
 urlpatterns = [
-    path(f'{API_VERSION}/admin/', admin.site.urls),
+    path(f'admin/', admin.site.urls),
     path(f'{API_VERSION}/tasks/', include(tasks.urls)),
 ]
