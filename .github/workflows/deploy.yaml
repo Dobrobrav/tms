@@ -6,6 +6,28 @@ on:
       - main
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up docker compose
+        run: |
+          cd docker
+          docker compose -f docker-compose.yaml -f docker-compose.tests.yaml up -d --build 
+
+      - name: Run tests
+        run: |
+          cd docker
+          docker compose exec web pytest
+
+      - name: Stop Docker Compose
+        if: always()
+        run: |
+          cd docker
+          docker compose down
+
   deploy:
     name: SSH Deploy to Server
     runs-on: ubuntu-latest
@@ -14,9 +36,9 @@ jobs:
       - name: "Deploy"
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ...
-          username: ...
-          key: ...
+          host: ${{ HOST_IP_ADDRESS }}
+          username: ${{ HOST_USER }}
+          key: ${{ HOST_PASSWORD }}
           script: |
             cd ../home/projects/tms
             git pull

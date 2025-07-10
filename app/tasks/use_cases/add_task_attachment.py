@@ -42,7 +42,7 @@ class AddTaskAttachmentUsecase(Usecase):
         task_entity.add_attachment_id(attachment_id)
         self._task_repo.set(task_entity)
 
-        return self._attachment_s3_uploader.get_attachment_url(s3_file_key)
+        return self._attachment_s3_uploader.get_file_url(s3_file_key)
 
 
 class AttachmentS3Uploader:
@@ -56,7 +56,7 @@ class AttachmentS3Uploader:
         self._s3_gateway.upload_file(bytes_stream=bytes_stream, file_key=file_key, filename=filename)
         return file_key
 
-    def get_attachment_url(self, file_key: 'S3FileKey') -> HttpUrl:
+    def get_file_url(self, file_key: 'S3FileKey') -> HttpUrl:
         return HttpUrl(f"{settings.SELECTEL_CDN_URL}/{file_key}")
 
 
