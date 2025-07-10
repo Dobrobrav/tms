@@ -1,0 +1,26 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: SSH Deploy to Server
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Deploy"
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ...
+          username: ...
+          key: ...
+          script: |
+            cd ../home/projects/tms
+            git pull
+            cd docker
+            docker compose -f docker-compose.yaml -f docker-compose.prod.yaml down
+            docker compose -f docker-compose.yaml -f docker-compose.prod.yaml up --build
+
