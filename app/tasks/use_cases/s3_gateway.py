@@ -13,13 +13,13 @@ class S3Gateway:
             self,
             s3_client: S3Client,
             *,
-            _chunk_size: int = 5 * 1024 * 1024,  # _chunk_size used FOR TESTS ONLY!
+            _chunk_size: int = 5 * 1024 * 1024,  # _chunk_size must be passed in TESTS ONLY. Use default in prod!
     ) -> None:
         self._s3_client = s3_client
         self._chunk_size = _chunk_size
 
     def upload_file(self, bytes_stream: BytesStream, file_key: 'S3FileKey', filename: str) -> None:
-        logger.info('start uploading file', file_key=file_key)
+        logger.info('started uploading file', file_key=file_key)
         upload_id = self._s3_client.create_multipart_upload(
             Bucket=settings.SELECTEL_BUCKET,
             Key=file_key,
@@ -34,13 +34,13 @@ class S3Gateway:
 
         logger.info('finished uploading file', file_key=file_key)
 
-    def _upload_stream_multipart(self, bytes_stream: BytesStream, key: 'S3FileKey', upload_id: str) -> None:
+    def _upload_stream_multipart(self, bytes_stream: BytesStream, file_key: 'S3FileKey', upload_id: str) -> None:
         parts = []
         part_number = 1
         while chunk := bytes_stream.read(self._chunk_size):
             e_tag = self._s3_client.upload_part(
                 Bucket=settings.SELECTEL_BUCKET,
-                Key=key,
+                Key=file_key,
                 PartNumber=part_number,
                 UploadId=upload_id,
                 Body=chunk,
@@ -50,7 +50,7 @@ class S3Gateway:
 
         self._s3_client.complete_multipart_upload(
             Bucket=settings.SELECTEL_BUCKET,
-            Key=key,
+            Key=file_key,
             UploadId=upload_id,
             MultipartUpload={'Parts': parts}
         )
