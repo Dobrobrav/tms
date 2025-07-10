@@ -3,24 +3,47 @@ name: Deploy
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up docker compose
+        run: |
+          cd docker
+          docker compose -f docker-compose.yaml -f docker-compose.tests.yaml up -d --build 
+
+      - name: Run tests
+        run: |
+          cd docker
+          docker compose exec web pytest
+
+      - name: Stop Docker Compose
+        if: always()
+        run: |
+          cd docker
+          docker compose down
+
   deploy:
     name: SSH Deploy to Server
+    needs: test
     runs-on: ubuntu-latest
 
     steps:
       - name: "Deploy"
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ...
-          username: ...
-          key: ...
+          host: ${{ secrets.HOST_IP_ADDRESS }}
+          username: ${{ secrets.HOST_USER }}
+          password: ${{ secrets.HOST_PASSWORD }}
           script: |
-            cd ../home/projects/tms
+            cd /home/projects/tms
             git pull
             cd docker
             docker compose -f docker-compose.yaml -f docker-compose.prod.yaml down
-            docker compose -f docker-compose.yaml -f docker-compose.prod.yaml up --build
+            docker compose -f docker-compose.yaml -f docker-compose.prod.yaml up -d --build
 
