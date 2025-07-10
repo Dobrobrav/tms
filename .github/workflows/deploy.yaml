@@ -39,11 +39,11 @@ jobs:
         with:
           host: ${{ secrets.HOST_IP_ADDRESS }}
           username: ${{ secrets.HOST_USER }}
-          key: ${{ secrets.HOST_PASSWORD }}
+          password: ${{ secrets.HOST_PASSWORD }}
           script: |
-            cd ../home/projects/tms
+            cd /home/projects/tms
             git pull
             cd docker
             docker compose -f docker-compose.yaml -f docker-compose.prod.yaml down
-            docker compose -f docker-compose.yaml -f docker-compose.prod.yaml up --build
+            docker compose -f docker-compose.yaml -f docker-compose.prod.yaml up -d --build
 
