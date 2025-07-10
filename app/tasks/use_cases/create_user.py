@@ -2,7 +2,7 @@ from tasks.domain.users.dto import UserDTO
 from tasks.domain.users.repository import UserRepository
 from tasks.domain.users.user import UserEntity
 from tasks.domain.users.value_objects import UserName
-from tasks.use_cases.base import Usecase
+from tasks.use_cases.base_usecase import Usecase
 
 
 class CreateUserUsecase(Usecase):

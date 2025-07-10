@@ -9,7 +9,8 @@ from tasks.domain.attachments.attachment_entity import AttachmentEntity, Filenam
 from tasks.domain.attachments.repository import AttachmentRepository
 from tasks.domain.tasks.repository import TaskRepository
 from tasks.models import AttachmentS3MetaModel
-from tasks.use_cases.base import Usecase
+from tasks.use_cases.base_usecase import Usecase
+from tasks.use_cases.s3_gateway import S3Gateway, S3FileKey
 from tms import settings
 from tms_types import BytesStream
 
@@ -57,54 +58,6 @@ class AttachmentS3Uploader:
 
     def get_file_url(self, s3_file_key: 'S3FileKey') -> HttpUrl:
         return HttpUrl(f"https://tms-container.s3.ru-7.storage.selcloud.ru/{s3_file_key}")
-
-
-class S3Gateway:
-    _CHUNK_SIZE = 5 * 1024 * 1024
-
-    def __init__(self, s3_client: S3Client) -> None:
-        self._s3_client = s3_client
-
-    def upload_file(self, bytes_stream: BytesStream, file_key: 'S3FileKey', filename: str) -> None:
-        logger.info('start uploading file', file_key=file_key)
-        upload_id = self._s3_client.create_multipart_upload(
-            Bucket=settings.SELECTEL_BUCKET,
-            Key=file_key,
-            ContentDisposition=f'attachment; filename="{filename}"',
-        )['UploadId']
-
-        try:
-            self._upload_stream_multipart(bytes_stream, file_key, upload_id)
-        except Exception as e:
-            self._s3_client.abort_multipart_upload(Bucket=settings.SELECTEL_BUCKET, Key=file_key, UploadId=upload_id)
-            raise e
-
-        logger.info('finished uploading file', file_key=file_key)
-
-    def _upload_stream_multipart(self, bytes_stream: BytesStream, key: 'S3FileKey', upload_id: str) -> None:
-        parts = []
-        part_number = 1
-        while chunk := bytes_stream.read(self._CHUNK_SIZE):
-            part = self._s3_client.upload_part(
-                Bucket=settings.SELECTEL_BUCKET,
-                Key=key,
-                PartNumber=part_number,
-                UploadId=upload_id,
-                Body=chunk,
-            )
-            parts.append({'ETag': part['ETag'], 'PartNumber': part_number})
-            part_number += 1
-
-        self._s3_client.complete_multipart_upload(
-            Bucket=settings.SELECTEL_BUCKET,
-            Key=key,
-            UploadId=upload_id,
-            MultipartUpload={'Parts': parts}
-        )
-
-
-class S3FileKey(str):
-    ...
 
 
 class AttachmentS3Meta(BaseModel):

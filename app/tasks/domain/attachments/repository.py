@@ -6,6 +6,7 @@ class AttachmentRepository:
     def set(self, attachment_entity: AttachmentEntity) -> int:
         attachment_already_stored = bool(attachment_entity.attachment_id)
         if attachment_already_stored:
+            raise NotImplementedError()  # TODO: not tested
             TaskAttachmentModel.objects.filter(pk=attachment_entity.attachment_id).update(
                 filename=attachment_entity.filename
             )

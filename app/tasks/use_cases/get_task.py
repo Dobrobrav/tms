@@ -1,6 +1,6 @@
 from tasks.domain.tasks.dto import TaskDTO
 from tasks.domain.tasks.repository import TaskRepository
-from tasks.use_cases.base import Usecase
+from tasks.use_cases.base_usecase import Usecase
 
 
 class GetTaskUsecase(Usecase):

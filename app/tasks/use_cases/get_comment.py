@@ -1,6 +1,6 @@
 from tasks.domain.comments.dto import CommentDTO
 from tasks.domain.tasks.repository import TaskRepository
-from tasks.use_cases.base import Usecase
+from tasks.use_cases.base_usecase import Usecase
 
 
 class GetCommentUsecase(Usecase):

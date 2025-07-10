@@ -3,7 +3,7 @@ from tasks.domain.tasks.repository import TaskRepository
 from tasks.domain.tasks.task import TaskEntity, TaskTitle
 from tasks.domain.users.repository import UserRepository
 from tasks.exceptions import InvalidReporterID, InvalidAssigneeID, InvalidRelatedTaskIDs
-from tasks.use_cases.base import Usecase
+from tasks.use_cases.base_usecase import Usecase
 
 
 class CreateTaskUsecase(Usecase):
