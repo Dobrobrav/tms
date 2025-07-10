@@ -37,9 +37,9 @@ jobs:
       - name: "Deploy"
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ HOST_IP_ADDRESS }}
-          username: ${{ HOST_USER }}
-          key: ${{ HOST_PASSWORD }}
+          host: ${{ secrets.HOST_IP_ADDRESS }}
+          username: ${{ secrets.HOST_USER }}
+          key: ${{ secrets.HOST_PASSWORD }}
           script: |
             cd ../home/projects/tms
             git pull
