@@ -1,13 +1,8 @@
 # Task Management System (TMS)
 
-<br>
 
-## Overview
-
-**Task Management System (TMS)** is an issue tracker built to practice Clean Architecture, Domain-Driven Design (DDD),
-and separation of concerns.  
-It implements realistic domain modeling with support for task creation, commenting, file attachments, and assignee
-assignment — all encapsulated in a clean, testable backend structure.  
+**Task Management System (TMS)** is an issue tracker built to practice Clean Architecture and Domain-Driven Design (DDD).
+It implements realistic domain modeling with support for task creation, commenting and file attachments — all encapsulated in a clean, testable backend structure.  
 The system includes layered tests: unit (domain), integration (views), and API-level.
 
 
@@ -17,7 +12,6 @@ The system includes layered tests: unit (domain), integration (views), and API-l
 
 - Clean Architecture
 - Domain-Driven Design (DDD)
-- Modular separation: `domain`, `usecases`, `infrastructure`, `interfaces`
 
 <br>
 
