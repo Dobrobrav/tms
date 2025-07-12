@@ -45,7 +45,7 @@ app/tasks/
 
 - Python 3.13
 - Django + Django REST Framework
-- SQLite (for simplicity)
+- SQLite (moving to PostgreSQL is planned)
 - AWS S3-compatible storage
 - Pytest
 - Docker + Docker Compose
