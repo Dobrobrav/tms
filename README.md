@@ -55,6 +55,13 @@ ___
 
 ___
 
+## CI/CD
+
+- CI: tests are automatically run on every push via GitHub Actions
+- CD: successful builds are deployed to a personal server via SSH
+
+---
+
 ## Features
 
 - Create tasks
@@ -65,5 +72,5 @@ ___
 
 ## Telegram Bot
 
-A basic Telegram bot is used as a basic chat-based interface to demonstrate core functionality.
+A Telegram bot is used as a basic chat-based interface to demonstrate core functionality.
 https://t.me/tms_proj_bot
