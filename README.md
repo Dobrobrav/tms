@@ -2,7 +2,8 @@
 
 
 **Task Management System (TMS)** is an issue tracker built to practice Clean Architecture and Domain-Driven Design (DDD).
-It implements realistic domain modeling with support for task creation, commenting and file attachments — all encapsulated in a clean, testable backend structure.  
+<br>
+It implements domain modeling with support for task creation, commenting and file attachments — all encapsulated in a clean, testable backend structure.  
 The system includes layered tests: unit (domain), integration (views), and API-level.
 
 
@@ -12,6 +13,8 @@ The system includes layered tests: unit (domain), integration (views), and API-l
 
 - Clean Architecture
 - Domain-Driven Design (DDD)
+- File uploads to S3 are streamed to avoid memory overhead
+
 
 <br>
 
@@ -70,4 +73,11 @@ app/tasks/
 ## Telegram Bot
 
 A Telegram bot is used as a basic chat-based interface to demonstrate core functionality.
-https://t.me/tms_proj_bot
+<br>
+**Bot chat:** https://t.me/tms_proj_bot
+<br>
+**Bot source code:** https://github.com/Dobrobrav/tms_bot
+<br>
+<br>
+**Note:** due to Telegram Bot API limitations, file uploads are currently restricted to small files (up to ~20 MB).  
+Support for large file uploads (e.g. via external links) is planned.
