@@ -32,12 +32,20 @@ app/tasks/
 
 <br>
 
-## Test Coverage
+## Tests
+### Test Coverage
 
 - **~97% overall coverage**
 - Unit tests for domain logic (app/tasks/domain)
 - Integration tests for Django views (app/tasks/views/views_tests.py)
 - API-level tests (app/tasks/api_tests/)
+
+### Testing Approach
+
+Tests are designed to support long-term maintainability by following these principals:
+- Focused on testing behavior, not implementation details
+- Support safe refactoring
+- Aligned with the "test only what you own" principle
 
 <br>
 
@@ -45,7 +53,7 @@ app/tasks/
 
 - Python 3.13
 - Django + Django REST Framework
-- SQLite (for simplicity)
+- SQLite (moving to PostgreSQL is planned)
 - AWS S3-compatible storage
 - Pytest
 - Docker + Docker Compose
