@@ -1,6 +1,6 @@
-# Task Management System
+# Task Management System (TMS)
 
-______
+<br>
 
 ## Overview
 
@@ -11,7 +11,7 @@ assignment — all encapsulated in a clean, testable backend structure.
 The system includes layered tests: unit (domain), integration (views), and API-level.
 
 
----
+<br>
 
 ## Architecture
 
@@ -19,7 +19,7 @@ The system includes layered tests: unit (domain), integration (views), and API-l
 - Domain-Driven Design (DDD)
 - Modular separation: `domain`, `usecases`, `infrastructure`, `interfaces`
 
-___
+<br>
 
 ## Project Structure
 
@@ -32,7 +32,7 @@ app/tasks/
 └── api_tests/      
 ```
 
-___
+<br>
 
 ## Test Coverage
 
@@ -41,7 +41,7 @@ ___
 - Integration tests for Django views (app/tasks/views/views_tests.py)
 - API-level tests (app/tasks/api_tests/)
 
-___
+<br>
 
 ## Tech Stack
 
@@ -53,14 +53,16 @@ ___
 - Docker + Docker Compose
 - Bash (startup script for migrations and dev server)
 
-___
+<br>
+ 
 
 ## CI/CD
 
 - CI: tests are automatically run on every push via GitHub Actions
 - CD: successful builds are deployed to a personal server via SSH
 
----
+
+ <br>
 
 ## Features
 
@@ -68,7 +70,8 @@ ___
 - Comment on tasks
 - Attach files to tasks
 
-___
+
+ <br>
 
 ## Telegram Bot
 
