@@ -1,4 +1,4 @@
-# Task Management System (TMS)
+# Task Management System
 
 
 **Task Management System (TMS)** is an issue tracker built to practice Clean Architecture and Domain-Driven Design (DDD).
@@ -14,6 +14,7 @@ The system includes layered tests: unit (domain), integration (views), and API-l
 - Clean Architecture
 - Domain-Driven Design (DDD)
 - File uploads to S3 are streamed to avoid memory overhead
+- (The bot uses asynchronous streaming without loading it fully into memory)
 
 
 <br>
