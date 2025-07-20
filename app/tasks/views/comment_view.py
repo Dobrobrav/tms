@@ -14,7 +14,6 @@ from tasks.use_cases.get_comment import GetCommentUsecase
 from utils import log_error
 
 
-@parser_classes([JSONParser])
 class CommentView(APIView):
     create_comment_usecase: CreateCommentUsecase = None
     get_comment_usecase: GetCommentUsecase = None
