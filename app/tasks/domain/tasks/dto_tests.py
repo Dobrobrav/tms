@@ -3,7 +3,7 @@ from datetime import datetime
 from tasks.domain.comments.comment import CommentEntity, CommentContent
 from tasks.domain.comments.dto import CommentDTO
 from tasks.domain.tasks.dto import TaskDTO
-from tasks.domain.tasks.task import TaskEntity, TaskTitle
+from tasks.domain.tasks.task_entity import TaskEntity, TaskTitle
 
 
 def test__dto_casted_from_entity_has_correct_data() -> None:

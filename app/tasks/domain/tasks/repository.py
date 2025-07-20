@@ -1,7 +1,7 @@
 from typing import Sequence
 
 from tasks.domain.comments.comment import CommentEntity, CommentContent
-from tasks.domain.tasks.task import TaskEntity, TaskTitle
+from tasks.domain.tasks.task_entity import TaskEntity, TaskTitle
 from tasks.exceptions import InvalidTaskID, CommentNotExists
 from tasks.models import TaskModel, CommentModel, TaskAttachmentModel
 
@@ -38,6 +38,35 @@ class TaskRepository:
 
         return self._store_new_task(task_entity).pk
 
+    def exists(self, id_or_ids: int | Sequence[int]) -> bool:
+        """ Returns true if ALL provided ids exist in repo """
+        ids = [id_or_ids] if isinstance(id_or_ids, int) else id_or_ids
+        return TaskModel.objects.filter(pk__in=list(ids)).count() == len(ids)
+
+    def set_comment(self, task_entity: TaskEntity, comment_entity: CommentEntity) -> int:
+        comment_orm = CommentModel.objects.create(
+            text=comment_entity.content,
+            task=TaskModel.objects.get(pk=task_entity.task_id),
+            create_time=comment_entity.create_time,
+            commenter_id=comment_entity.commenter_id,
+        )
+        return comment_orm.pk
+
+    def get_comment(self, comment_id: int) -> tuple[CommentEntity, int]:
+        try:
+            comment_orm = CommentModel.objects.get(pk=comment_id)
+        except CommentModel.DoesNotExist:
+            raise CommentNotExists(comment_id)
+        return (
+            CommentEntity(
+                user_id=comment_orm.commenter_id,
+                comment_id=comment_orm.pk,
+                content=CommentContent(value=comment_orm.text),
+                create_time=comment_orm.create_time
+            ),
+            comment_orm.task_id,
+        )
+
     def _update_existent_task(self, task_entity: TaskEntity) -> TaskModel:
         # TODO: cover with tests
         TaskModel.objects.filter(pk=task_entity.task_id).update(
@@ -68,32 +97,3 @@ class TaskRepository:
         task_orm.related_tasks.set(self._get_related_tasks(task_entity.related_task_ids))
         task_orm.attachments.set(self._get_attachments(task_entity.attachment_ids))
         return task_orm
-
-    def exists(self, id_or_ids: int | Sequence[int]) -> bool:
-        """ Returns true if ALL provided ids exist in repo """
-        ids = [id_or_ids] if isinstance(id_or_ids, int) else id_or_ids
-        return TaskModel.objects.filter(pk__in=list(ids)).count() == len(ids)
-
-    def set_comment(self, task_entity: TaskEntity, comment_entity: CommentEntity) -> int:
-        comment_orm = CommentModel.objects.create(
-            text=comment_entity.content,
-            task=TaskModel.objects.get(pk=task_entity.task_id),
-            create_time=comment_entity.create_time,
-            commenter_id=comment_entity.commenter_id,
-        )
-        return comment_orm.pk
-
-    def get_comment(self, comment_id: int) -> tuple[CommentEntity, int]:
-        try:
-            comment_orm = CommentModel.objects.get(pk=comment_id)
-        except CommentModel.DoesNotExist:
-            raise CommentNotExists(comment_id)
-        return (
-            CommentEntity(
-                user_id=comment_orm.commenter_id,
-                comment_id=comment_orm.pk,
-                content=CommentContent(value=comment_orm.text),
-                create_time=comment_orm.create_time
-            ),
-            comment_orm.task_id,
-        )

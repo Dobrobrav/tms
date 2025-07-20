@@ -5,7 +5,7 @@ import pytest
 from pydantic import ValidationError
 
 from tasks.domain.comments.comment import CommentEntity, CommentContent
-from tasks.domain.tasks.task import TaskEntity, TaskTitle
+from tasks.domain.tasks.task_entity import TaskEntity, TaskTitle
 
 
 @pytest.fixture
